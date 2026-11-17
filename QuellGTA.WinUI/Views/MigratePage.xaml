@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.MigratePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Margin="28,20,28,28">
+                <TextBlock Text="迁移" Style="{StaticResource PageTitleStyle}" />
+                <TextBlock Text="把游戏的设置搬到另一台电脑，或者把本程序的配置存成几份随时切换。"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                <StackPanel x:Name="Panel" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

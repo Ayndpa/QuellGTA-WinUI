@@ -1,0 +1,17 @@
+# QuellGTA-Mscript
+KeyDn|51
+Delay|100
+KeyUp|51
+Delay|100
+KeyDn|54
+Delay|40
+KeyUp|54
+Delay|40
+KeyDn|49
+Delay|40
+KeyUp|49
+Delay|40
+KeyDn|54
+Delay|40
+KeyUp|54
+Delay|40

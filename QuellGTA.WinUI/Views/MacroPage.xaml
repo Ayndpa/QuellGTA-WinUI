@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.MacroPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuellGTA.Views">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Margin="28,20,28,28">
+            <TextBlock Text="宏键" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Text="所有模拟按键只在游戏位于前台时执行，游戏切到后台会自动停止。"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+            <!-- 自编宏 -->
+            <Grid Margin="2,16,0,6">
+                <TextBlock Text="自编宏" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <DropDownButton Content="从预设添加">
+                        <DropDownButton.Flyout>
+                            <MenuFlyout x:Name="PresetMenu" Placement="Bottom" />
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+                    <Button Content="新建宏" Style="{StaticResource AccentButtonStyle}" Click="New_Click" />
+                </StackPanel>
+            </Grid>
+            <StackPanel x:Name="MacroPanel" />
+            <TextBlock x:Name="EmptyText" Margin="2,4,0,0"
+                       Text="还没有宏。可以从预设添加一个，或者新建后自己编写按键序列。"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <!-- 连击左键 -->
+            <TextBlock Text="连击左键" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="点击频率（次/秒）" Description="用「连击左键」热键开关。">
+                <NumberBox x:Name="CpsBox" Minimum="1" Maximum="50" SmallChange="1" LargeChange="5"
+                           SpinButtonPlacementMode="Compact" Width="140" ValueChanged="Cps_Changed" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="触发方式">
+                <ComboBox x:Name="ClickModeCombo" Width="200" SelectionChanged="ClickMode_SelectionChanged">
+                    <ComboBoxItem Content="按下时切换开关" />
+                    <ComboBoxItem Content="按住按键时连击" />
+                </ComboBox>
+            </local:SettingRow>
+
+            <!-- 前台挂机 -->
+            <TextBlock Text="前台挂机" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="挂机方式"
+                              Description="把游戏切到前台并替你按住按键，防止挂机被踢。亲自按一下对应按键，或切走游戏窗口即结束。">
+                <ComboBox x:Name="AfkCombo" Width="200" SelectionChanged="Afk_SelectionChanged">
+                    <ComboBoxItem Content="按住右键（自由状态）" />
+                    <ComboBoxItem Content="按住 S 键（差事页面）" />
+                </ComboBox>
+            </local:SettingRow>
+
+            <local:SettingRow x:Name="AfkRow" Title="开始挂机">
+                <Button x:Name="AfkButton" Content="开始挂机" Click="Afk_Click" MinWidth="120" />
+            </local:SettingRow>
+            <StackPanel x:Name="ExtraPanel" />
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

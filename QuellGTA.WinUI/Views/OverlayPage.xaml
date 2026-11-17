@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.OverlayPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuellGTA.Views">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Margin="28,20,28,28">
+            <TextBlock Text="浮窗" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Text="显示在游戏画面上方的准星和计时器，鼠标可以穿透。游戏需要设为「无边框窗口」，独占全屏下不会显示。"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+            <!-- 外置准星 -->
+            <TextBlock Text="外置准星" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="显示准星" Description="在屏幕中央画一个固定的准星。">
+                <ToggleSwitch x:Name="CrosshairSwitch" Toggled="Crosshair_Changed" />
+            </local:SettingRow>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <Grid ColumnSpacing="24" RowSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ComboBox x:Name="ShapeCombo" Header="形状" HorizontalAlignment="Stretch" SelectionChanged="Crosshair_Changed">
+                        <ComboBoxItem Content="十字" />
+                        <ComboBoxItem Content="圆点" />
+                        <ComboBoxItem Content="圆环" />
+                        <ComboBoxItem Content="十字 + 中心点" />
+                        <ComboBoxItem Content="空心十字" />
+                        <ComboBoxItem Content="字符" />
+                    </ComboBox>
+                    <ComboBox x:Name="CrosshairColorCombo" Grid.Column="1" Header="颜色" HorizontalAlignment="Stretch"
+                              SelectionChanged="Crosshair_Changed" />
+
+                    <Slider x:Name="SizeSlider" Grid.Row="1" Header="大小" Minimum="2" Maximum="80" ValueChanged="Crosshair_Changed" />
+                    <Slider x:Name="ThicknessSlider" Grid.Row="1" Grid.Column="1" Header="线宽" Minimum="1" Maximum="10"
+                            ValueChanged="Crosshair_Changed" />
+
+                    <Slider x:Name="CrosshairOpacitySlider" Grid.Row="2" Header="不透明度" Minimum="10" Maximum="100" StepFrequency="5"
+                            ValueChanged="Crosshair_Changed" />
+                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Bottom">
+                        <NumberBox x:Name="CrosshairXBox" Header="水平偏移" Width="120" SpinButtonPlacementMode="Compact"
+                                   ValueChanged="CrosshairOffset_Changed" />
+                        <NumberBox x:Name="CrosshairYBox" Header="垂直偏移" Width="120" SpinButtonPlacementMode="Compact"
+                                   ValueChanged="CrosshairOffset_Changed" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <CheckBox x:Name="OutlineCheck" Content="黑色描边" Click="Crosshair_Changed" />
+                    <CheckBox x:Name="FollowCheck" Content="跟随游戏窗口位置" Click="Crosshair_Changed" />
+                    <CheckBox x:Name="ForegroundCheck" Content="仅游戏前台显示" Click="Crosshair_Changed" />
+                    <CheckBox x:Name="CrosshairCaptureCheck" Content="在截屏中隐藏" Click="Crosshair_Changed" />
+                </StackPanel>
+            </Border>
+
+            <!-- 简易计时 -->
+            <TextBlock Text="简易计时" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="显示计时器" Description="用「计时」热键依次：开始计时 → 结束计时 → 重置。">
+                <ToggleSwitch x:Name="TimerSwitch" Toggled="Timer_Changed" />
+            </local:SettingRow>
+
+            <local:SettingRow x:Name="TimerRow" Title="00:00:00.00">
+                <Button x:Name="TimerButton" Content="开始计时" MinWidth="120" Click="TimerButton_Click" />
+            </local:SettingRow>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <Grid ColumnSpacing="24" RowSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Slider x:Name="FontSlider" Header="字号" Minimum="8" Maximum="72" ValueChanged="Timer_Changed" />
+                    <ComboBox x:Name="TimerColorCombo" Grid.Column="1" Header="颜色" HorizontalAlignment="Stretch"
+                              SelectionChanged="Timer_Changed" />
+
+                    <Slider x:Name="TimerOpacitySlider" Grid.Row="1" Header="不透明度" Minimum="10" Maximum="100" StepFrequency="5"
+                            ValueChanged="Timer_Changed" />
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Bottom">
+                        <NumberBox x:Name="TimerXBox" Header="水平偏移" Width="120" SpinButtonPlacementMode="Compact"
+                                   ValueChanged="TimerOffset_Changed" />
+                        <NumberBox x:Name="TimerYBox" Header="距顶部" Width="120" SpinButtonPlacementMode="Compact"
+                                   ValueChanged="TimerOffset_Changed" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <CheckBox x:Name="HideHoursCheck" Content="不显示小时" Click="Timer_Changed" />
+                    <CheckBox x:Name="HideIdleCheck" Content="非计时状态隐藏" Click="Timer_Changed" />
+                    <CheckBox x:Name="TimerCaptureCheck" Content="在截屏中隐藏" Click="Timer_Changed" />
+                </StackPanel>
+            </Border>
+            <StackPanel x:Name="ExtraPanel" />
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

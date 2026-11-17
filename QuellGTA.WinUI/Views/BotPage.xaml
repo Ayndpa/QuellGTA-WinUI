@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.BotPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuellGTA.Views">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Margin="28,20,28,28">
+                <TextBlock Text="差传" Style="{StaticResource PageTitleStyle}" />
+                <TextBlock Text="把一段战局邀请（SteamJVP）交给 Steam，让游戏直接加入那个战局。加入志愿者提供的差传 Bot，就可以从它的战局被传送进差事。"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+                <InfoBar IsOpen="True" IsClosable="False" Severity="Informational" Margin="0,12,0,0"
+                         Title="只对 Steam 增强版有效"
+                         Message="需要增强版正在运行并且已经进入线上模式。部分贴吧、帮会、群聊把差传视为违规，使用前请先问清楚。" />
+
+                <!-- 在线 Bot -->
+                <Grid Margin="2,16,0,6">
+                    <TextBlock Text="在线 Bot" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                        <Button x:Name="StatusButton" Content="查询运行状态" Click="Status_Click" />
+                        <Button x:Name="RefreshButton" Content="刷新列表" Style="{StaticResource AccentButtonStyle}" Click="Refresh_Click" />
+                    </StackPanel>
+                </Grid>
+                <TextBlock x:Name="BotInfo" Margin="2,0,0,6" TextWrapping="Wrap"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Text="点击「刷新列表」获取当前在线的 Bot。" />
+                <StackPanel x:Name="BotPanel" />
+
+                <!-- 快捷槽位 -->
+                <TextBlock Text="快捷加入" Style="{StaticResource SectionHeaderStyle}" />
+                <local:SettingRow x:Name="SlotARow" Title="战局甲">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="加入" Tag="甲" Click="JoinSlot_Click" />
+                        <Button Content="设置…" Tag="甲" Click="EditSlot_Click" />
+                    </StackPanel>
+                </local:SettingRow>
+                <local:SettingRow x:Name="SlotBRow" Title="战局乙">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="加入" Tag="乙" Click="JoinSlot_Click" />
+                        <Button Content="设置…" Tag="乙" Click="EditSlot_Click" />
+                    </StackPanel>
+                </local:SettingRow>
+                <TextBlock Text="可以在「热键」页给战局甲 / 乙各设一个热键，在游戏里一键加入。" Margin="2,2,0,0"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+                <!-- 差事候车 -->
+                <TextBlock Text="差事候车" Style="{StaticResource SectionHeaderStyle}" />
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                    <StackPanel Spacing="8">
+                        <TextBlock TextWrapping="Wrap" Style="{StaticResource CaptionTextBlockStyle}"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Text="盯着一个「差事克隆 Bot」的状态页：轮到可以上车时提醒你，差事开始时提醒你卡单。状态页地址由 Bot 的维护者提供。开始前请先完成卡 CEO 等准备工作。" />
+                        <Grid ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ComboBox x:Name="WaitUrlBox" IsEditable="True" HorizontalAlignment="Stretch"
+                                      PlaceholderText="状态页地址，以 http:// 或 https:// 开头" />
+                            <Button x:Name="WaitStartButton" Grid.Column="1" Content="开始候车"
+                                    Style="{StaticResource AccentButtonStyle}" Click="WaitStart_Click" />
+                            <Button x:Name="WaitStopButton" Grid.Column="2" Content="结束候车" Click="WaitStop_Click" />
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <CheckBox x:Name="WaitAutoJoin" Content="可以上车时自动加入战局" Click="WaitOption_Click" />
+                            <CheckBox x:Name="WaitAutoSolo" Content="差事开始时自动卡单" Click="WaitOption_Click" />
+                            <Button x:Name="WaitJoinButton" Content="加入战局" Click="WaitJoin_Click" />
+                            <Button Content="清空历史地址" Click="WaitClear_Click" />
+                        </StackPanel>
+                        <TextBox x:Name="WaitLog" IsReadOnly="True" AcceptsReturn="True" TextWrapping="Wrap" Height="150"
+                                 FontFamily="Consolas" FontSize="12" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    </StackPanel>
+                </Border>
+
+                <!-- 工具 -->
+                <TextBlock Text="工具" Style="{StaticResource SectionHeaderStyle}" />
+                <local:SettingRow Title="提取最近加入的战局"
+                                  Description="从 Steam 的日志里读出你最近一次通过邀请加入的战局，复制到剪贴板。可以发给队友，或者存进上面的槽位。需要 Steam 正在运行。">
+                    <Button Content="提取并复制" Click="Extract_Click" />
+                </local:SettingRow>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,1172 @@
+EN by Matchstickman vs Deepseek
+-
+Low latency offline mode.
+Devcon hardware mode
+Host IP:
+Transfer Setting
+Image Quality File
+UDP commands
+Backup profiles
+Local
+Transfer Assistant
+Back
+Game Version
+Save Code
+Last Used Time
+Export Data
+Import Data
+Save
+Advanced set
+Complete
+Offline 
+Instructions
+Offline settings  
+Offlined
+Return to quick join
+Use WFP or firewall to block outbound connections.
+Block network
+Warning! Windows Firewall is disabled!
+Firewall disconnection feature cannot work!
+Windows Firewall is disabled! Offline feature cannot work!
+To remove the prompt, uncheck 'Block Network' or enable WFP mode!
+Nickname
+Latency
+Handshake
+Room
+Version
+Address
+Online  
+Only block the UDP protocol
+Only block port 6672
+Change hotkey
+Switch version
+Download Online
+Clear the command line
+Solo the session seconds 
+Force quit the process when closing RTSS
+Change timer font color
+Draw recognition process
+Key press simulation duration
+Key press simulation interval
+Only block the job server
+Display
+Auto running tool
+Please update
+Tools
+Quick join free server
+Set the function for the key: (Right-click to select a mouse button or disable)
+AFK
+Adjust traffic
+Adjust shadows
+Main menu
+Broadcast set
+Simulate macro keys
+Game adjust options
+Welcome to QuellGTA, please select a function:
+Restore public session
+Restore backup profiles
+Change the stroke color (base color)
+Size
+Horizontal
+Timer
+Vertical
+fix settings
+Create room
+Set the working mode of the key: (Mouse side buttons are not supported in polling mode)
+Unselect to offline globally.
+Simulate firewall disconnection.
+Only disable TCP/IP protocol
+Only process offline
+Loading
+Disable network adapter
+Like right-clicking the network adapter and selecting "Disable".
+Disable network adapter
+Auto solo the session
+Solo the session mode
+Waiting for connection...
+Waiting for the server to send a handshake packet...
+Quick join a room
+Enter the host and port provided by teammates to connect quickly.
+Leave room
+Auto left-click
+Join room
+Connecting, please wait...
+Run the daemon
+Online
+Join TP A
+Change nickname
+Nickname
+Your nickname (required):
+Custom Macro B
+Startup and Uninstall
+Hotkey
+Working mode explanation  
+Warning! Hotkeys will be paused while on this page. After making changes, be sure to click "Apply".
+Save and open logs
+Kill process
+Kill Launcher
+Refresh Save List
+Settings
+Agency mode
+Tutorial for online (From bilibili,please turn on your translator)
+Includes creating rooms, connecting IP, changing nicknames, etc.
+Advanced options
+Room password:
+Generate nickname
+Sound Vol
+Using WFP filters
+GTA Tools
+System
+Room chat
+Chat
+Change room
+Room
+Change profile picture
+Attempt to fix network issues
+Game Fix And Setup Tool (pc_settings.bin)
+FIx the files
+Instant hover
+Apply hotkey
+Select the disabled network adapter.
+Resolve host name
+Paste text
+Session encryption lock (startup.meta)
+Unlock
+Open directory
+Refresh
+Lock
+Please click "Refresh" first!
+Join TP B
+Cancel read-only
+Cancel
+Polling mode
+Home
+Automatically save logs daily
+Offline
+solo only session by using firewall.
+Only block player connections
+Disable cloud save and transactions.
+Only block cloud server
+Minimize after launch
+In-game character switch key
+Exit
+Check TPbot Status
+Show network adapter
+Eng Lock
+Copy
+Paste
+Soloing
+Disable this feature
+Which mode should I use?
+Pause process (compatibility)  
+Suspend window (Legacy 185% cut glitch)  
+Right-click menu (Enhanced 185% cut glitch)  
+Block P2P port (6672)
+Hold right-click to AFK (free mode)
+Hold right-click to AFK + pseudo-background  
+Hold S key to AFK (mission screen)
+Hold S key to AFK + pseudo-background
+Only perform pseudo-background operations
+Auto-detect
+GTAV Legacy
+GTAV Enhanced
+Custom process
+Refresh TPBot list
+Do not retry after update check failure
+Read the most recently added each time
+Custom SteamJVP
+、、、
+Open QuellGTA
+Restart hotkey engine
+Exit QuellGTA
+Open data directory
+Restart QuellGTA
+Close QuellGTA
+Update Online
+About version
+Useful links
+Gang emblem generator
+Github source code repository
+Scan to donate to the author
+MageAngela homepage
+QuellGTA homepage  
+Bilibili homepage
+Save to TXT
+Open TXT File
+No system firewall required.
+Repair options
+Attempt to fix network
+Fix unable to enter GTA Online
+Fix Rockstar Games Launcher errors
+Criminal Mastermind progress
+OG Heist Criminal Mastermind
+ACT Heist Criminal Mastermind
+Achievements
+Window always on top  
+Evaluate progress retention during C.M.
+Prompt when operation is successful  
+Alt detection is disabled
+Query all saved files
+Set read-only
+Run in tray after closing
+Refresh session lock status
+Detect running game
+Steam Enhanced Edition
+Steam Legacy Edition  
+Epic Enhanced Edition  
+Epic Legacy Edition  
+Unknown game or platform
+Game has never been run
+How to use Bot teleport?
+PC Settings Editor Web Version
+、、、
+、、、
+、、、
+Only block ports 80,443
+Only block cloud save server
+Only block transaction server
+Direct SteamJVP link
+Save or load configuration
+Rename current profiles
+Delete profiles and apply default
+Save current profiles
+Load and overwrite profiles
+Delete specified profiles
+Open save directory
+Discussion and feedback QQ group
+Log when saved successfully
+Play sound when saved successfully
+Open the table of contents
+Turn On
+Edit settings
+Debug sounds
+Shift detection is disabled
+Ctrl detection is disabled
+Key combinations are detected normally
+Enabled only in the foreground of the game
+Toggle character hover
+Alt F4 obstructs cloud hovering
+Alt F4 hovers off the grid
+Starts when you press and hold the key
+Toggle the switch when pressed
+All data is zeroed
+Privacy and security notes
+Accelerators and anti-soft may bypass network disconnection!
+It is recommended to test whether the disconnection function is normal!
+Disable surround sound
+Advanced User Options
+System notifications are not pushed
+Set the update check interval
+Resident displays real-time time
+Hide the timer in the screenshot
+Non-timed status hidden
+Hours are not displayed
+QuellGTA_Plug
+Fix BattlEye anti-cheat
+Automatic AFK anti-kick
+Installation options
+Create a room after run
+Install it in the data directory
+Uninstall or erase data
+Automatic fingerprint
+Start the service
+Discontinuation of service
+Automatically starts and stops with the game
+shortcut key
+The game is in full-screen mode
+Key press delay
+Pattern similarity
+Diamond fingerprints
+Perico fingerprints
+Downloads & Updates
+Auto-run on startup
+Cancel auto-run on startup
+Always remind for optional updates
+Enabled only when the game is running
+Custom Macro A
+Switching in the game background
+Custom Macro
+Enable custom macro: only supports sequential execution~
+action
+value
+description
+Keyboard:
+Hold
+loosen
+edit
+Insert
+Mouse:
+Left
+Right
+Insert
+Delay:
+Insert
+up
+down
+Delete
+Preset:
+Preset
+Import
+Export
+Save
+Empty the sequence
+Double-barrel spraying revolver with 2 bullets (collected from QQ groups)
+View archive list
+Open door and ignite (By 415)
+Store the vehicle (By 415)
+Change the TP A
+Change the TP B
+Change opacity
+1. Only clean online settings file
+2. Delete the file after backup
+Automatically clean after quitting the game
+Horizontal display mode
+Refresh the list of public service services
+Key pressed after timeout
+Manual input
+*Timer floating window setting (please click Save to finish the change)
+*Crosshair floating window setting (please click Save to finish the change)
+Set the timer
+Set the front sight
+Restore the default location
+Follow the game window position
+Change the color of the front sight
+Change opacity
+Change the shape of the front sight
+Crosshair width
+Crosshair spacing
+Center point size
+Hide the front spot in the screenshot
+Only the game foreground display
+Crosshair
+Pause the timer
+Resume timing
+Remember the current time
+Read the memorization time
+Adjust the time manually
+Automatic AFK timeout
+*The built-in floating window only supports windowed or borderless modes. For fullscreen, check RTSS.
+Text refresh rate
+Game server status
+Game license plate customization
+Game map website
+Check Bot running status
+Repair client files
+Shared resource files across multiple platforms
+Multi-screen Offset
+Reset
+Extract the most recently added SteamJVP
+Debug command
+The IP protocol includes IPv6
+、、、
+Key Settings File
+Main Settings File
+Main File Cleaning
+Copy current save code
+Paste into the current save
+Automatic detection (game process)
+Manual selection (VPN process)
+、、、
+、、、
+、、、
+FPS Limit
+XYMM Online Toolbox
+Simulated controller AFK (true background)
+1.Exit RTSS and Related Features
+Automatically delete when quitting the game
+Use the old version cleaning method
+Switch Frequency
+Auto Hack
+Clear DX12 shader cache
+clears the DX12 cache when exiting
+Joystick movement after timeout
+Duration
+Test Function
+Game Start
+Game Exit
+RTSS FPS Limit
+Enable RTSS FPS Limit Control
+Control Game Process Only
+Hotkey Trigger Action
+Cycle to Next Preset
+Manually Enter FPS
+Set Preset
+Enable RTSS FPS Limit
+Disable RTSS FPS Limit
+Download or Update RTSS
+Use RTSS to display  
+OSD information display settings  
+Show RTSS frame lock framerate  
+Show blocked network status  
+Show disabled network card status  
+Customize personal signature  
+Do not convert Chinese to Pinyin when using RTSS
+Change OSD font color  
+Change signature font color
+Fix Rockstar Launcher
+Only process recently used settings files
+Fix DX12 shader errors
+Fix BE anti-cheat errors
+Record when cloud save is successful
+Automatically switch between two versions of save files
+Automatically start the RTSS program
+Generate Avatar
+Extract Image
+PC Settings Editor
+Manually Edit Settings
+Disable this hotkey
+Left mouse button
+Right mouse button
+Middle mouse button
+Mouse wheel up
+Mouse wheel down
+Mouse side button up
+Mouse side button down
+Multi-slot custom macro
+Access web version
+Multi-Slot Macro
+Enable multi-slot custom macros (Mouse side buttons are not supported in polling mode)
+Combo Key
+Main Hotkey
+Hotkey Description
+Macro File Location
+File:
+Hotkey:
+Browse
+Save
+Delete
+Kill now
+Pass-through Mode
+Hotkey Engine Effectiveness Self-Check
+Custom target network card
+It will only take effect after clicking the save button.
+Show all network cards
+Modify safety interval
+Automatically close RTSS program
+Disable echo
+Echo on demand
+Always echo
+Set RTSS status echo
+Close on game exit
+Try to fix game frame drops
+Try to fix high CPU usage
+Disable Quick Start
+Times:
+Only block TCP protocol
+Game Start
+Manual start
+Clear History
+Back
+SessionManager
+GTAOL KeyMacro
+EliteSpeedrunTool
+Fast JobTP
+MikiGTA5Box
+AIO Unlocker
+Auto start the game
+QuellGTA Guide
+Try to fix the disconnected network component
+Allow repeated runs
+Delete the graphics settings file
+Delete the key bindings file
+Adjust ray tracing
+Adjust supersampling
+Adjust frame generation
+Enter safe mode
+Fix ERR_GFX_STATE  
+Check example error pop-up  
+2.Turn off supersampling and ray tracing  
+3.Delete graphics settings file  
+4.Start the game in safe mode  
+5.Uninstall and reinstall the graphics card driver
+No pop-up when cleaning or deleting fails
+Joy Set
+Joy Speed Run
+Trigger Hotkey
+Click frequency
+Pushing distance
+Try to fixing the controller does not work.  
+There’s a sound alert when starting or stopping.
+Create on demand
+Disable process path verification
+Update the log Background
+Disable logs
+Log and Notification Management
+Using external plugins
+Process Termination Protection
+Unresponsive Process Protection
+Compatibility Mode
+Show error warning
+Auto-recovery status
+Change Crosshair Character
+Cross Center Point
+Solid cross
+Hollow Cross
+Circle midpoint
+Hollow circle
+Center point only
+Circular center point
+Outer circle width
+Change display font
+Songti
+Bold
+Get from this machine's Steam
+Get from a specific webpage
+Join the mission waiting battle
+Pass through the lasers
+<Waiting for the train...>
+Mission queue
+Refresh now
+Current status:
+*Note: Features related to joining battles are only supported in the Steam Enhanced Edition
+Auto lock queue
+Auto join battle
+Start lock queue
+Join battle
+Get online
+Start waiting
+End waiting
+Task Cloning Bot Info
+Auto Card CEO Tool (xymm)
+Hide window
+Move window
+Old Home Menu
+Change execution delay
+Choose Avatar
+Refresh List
+Apply Current Avatar
+Back
+Method provided by OnelyMaker
+Switch Guild
+Switch to Next
+Refresh Guild List
+Hotkey Switch
+E-Token
+Select Token
+Add Token
+Delete Token
+Change Password
+Copy Token Code
+Paste Token Code
+Migrate to Another Authenticator
+Use Network Time
+-
+Version:
+Another QuellGTA is running. Please check the taskbar or the system tray in the bottom right corner. If you want me to bring up that QuellGTA, please click [OK], but sometimes it may not be possible to wake it up. If you can't find the QuellGTA icon in the tray, please click [Cancel], and I will terminate the other QuellGTA process and then continue to start the current process.
+UI loaded, initializing...
+: Checking for updates........
+New version released, please update ASAP!
+The version you are using is too old and may not be compatible with the game version or online play.  
+It is strongly recommended to download the latest version and rerun the program. Click the [Please update] button on the left to proceed.
+QuellGTA will always strive to maintain compatibility with older versions.
+Already the latest version, thank you for using the latest software!
+The official website's latest version is Build
+, which is not as advanced as your version!
+Failed to check for updates, please check your network!
+EXE status: Running...
+Running
+EXE status: Not running
+Not running
+Handshake packet timeout, reconnecting!
+Hotkeys may still not work, please test manually! It is recommended to disable the [Disable Windows key] feature in Rockstar Games Launcher. Additionally, the Windows User Account Control window may block hotkeys, causing the hotkey engine to restart repeatedly. If the hotkey engine continues to restart, it is recommended to restart the entire software.
+Hotkey failure detected, hotkey engine restarted!
+Hotkey engine unstable, preparing to restart...
+-> Start logging
+Current version:
+save files, do you need to switch save files?
+Profile: 
+Please enter the save file you want to switch to. Currently available:
+Settings file deleted successfully
+Failed to delete the settings file
+Warning! Windows Firewall is disabled, firewall offline feature cannot work!
+Configuration file corrupted. Blocking user connections and blocking server communication should not be enabled simultaneously.
+Configuration file corrupted. IP-only protocol and Dev mode should not be enabled simultaneously!
+Never started
+Warning! No hotkey working mode is enabled, hotkeys will not work!
+Macro feature enabled. You cannot set the in-game character switch key or ESC as a hotkey because the hover macro will simulate pressing the character switch key, causing the corresponding function to be triggered incorrectly. The character switch key used is:
+Solo the session time:
+The Device Migration Assistant is used to transfer game settings. After selecting a save file based on playtime and clicking export, a piece of code will be generated. Copy the code and paste it onto another machine in any way (if transferring between different accounts, this is not necessary), then select the target save file and import it. It can be applied in the following scenarios: 1. Migrating from device A to device B (for example, after reinstalling the system or going to an internet caf   and not wanting to reset key mappings, you can directly import using a code; if the account hasn't launched the game yet, you can manually add a new account with + button); 2. Migrating from account A to account B (if you have a secondary account but don't want to change its key mappings, you can directly transfer the settings from the main account to the secondary account); 3. Migrating from the Legacy version to the Enhanced version (if you play both the Legacy and Enhanced versions but don't want to set up twice, you can directly transfer settings between them). 
+ seconds
+You may need to exit the game first, otherwise the feature may fail!
+Michael|Trevor|Franklin|Lamar|Chop|Vigilante|Ivan|Chen Tao|Martin|Dre|Duggan
+Since you did not set a nickname, the system assigned you a random nickname:
+Configuration file loaded, time
+Running without administrator permissions, global hotkeys will not work. It is recommended to run as administrator! Change to run as administrator?
+In the new version, the hotkeys for disconnection and restoring network have been separated. Please note the changes.
+The configuration file was saved by version
+ Downgrading may cause unexpected bugs!  
+If it does not work, click Settings - Clear application data or uninstall, then run again.
+QuellGTA will always strive to maintain compatibility with older versions.
+Found data saved by version
+ file update completed.
+Cannot start, invalid port number.
+Connection not started due to invalid port number.
+Since you did not set a room, you have been assigned to the public room.
+Not running as administrator, firewall rule removal may fail.
+Total players: 1, Room players: 1
+Server started: 127.0.0.1:
+Cannot start connection, please check if the IP address is entered.
+Connection not started due to missing IP address.
+Joining
+Polling mode,
+You haven't entered anything yet!
+Agency / pass-through mode,
+Solo the session operation too frequent, ignored.
+Paused, solo the session started!  
+Resumed, solo session completed!
+Process does not exist, solo session operation failed.
+According to settings, solo session operation ignored.
+Hover operation too frequent, ignored.
+Hover operation executed.
+Broadcast sent to other members!
+Warning! No hotkey working mode is enabled, hotkeys will not work. Please confirm if this is intended.
+Warning! Not running as administrator, hotkeys will fail when leaving the window!
+When macro feature is enabled, you need to specify the in-game character switch key (default F5 Franklin, F6 Michael, F7 Trevor). Any of these three keys can be used, and do not set this key or ESC as a hotkey, as the hover macro will simulate pressing this key, causing the corresponding function to be triggered incorrectly.
+Kill process too frequent, ignored.
+According to settings, process not killed.
+Launcher.exe process killed successfully!
+Game process killed successfully!
+Failed to kill process, attempting forceful termination:
+Failed to kill game process, maximum attempts made!
+Game process does not exist!  
+Sound effects enabled.
+Sound effects disabled.
+Failed to enter host name.
+Data corruption detected, please check your network!
+Started 
+ (Total
+ Players)  
+Calcing.. (Total 
+The extension has been found, but it hasn't been installed to the data directory yet. Do you want to install it?
+ms (Total 
+Handshake packet received, connection confirmed!
+Received kill broadcast from
+, too frequent, ignored.
+, but operation not executed according to settings.
+Received offline broadcast from
+Received network adapter broadcast from
+Host version: Build 
+, it is recommended to update!
+The game is not running, hotkeys are ignored.
+, same as your version!
+, remind them to update!
+ said: [ 
+, connection confirmed!  
+Total players:
+, Room players: 
+To broadcast to other players, offline will be delayed for 500ms.
+To broadcast to other players, network adapter disable will be delayed for 500ms.
+ Version: Build  
+Connecting, please wait...
+Waiting for server to send handshake packet...
+Connection failed, please check connection and network.
+Resolving, please wait patiently...
+Input format error. Do not include http prefix or symbol suffix at the beginning.
+Invalid port number, discarded. Only resolving domain name.
+Failed to resolve host name. Check your network and ensure no http prefix or symbol suffix is included.
+ resolved to  
+No port number provided or input format error. Do not include http prefix or symbol suffix.
+Correct format: [domain:port]
+Invalid port number provided!
+Join room
+Reconnecting, please wait...
+Connection failed, retrying for
+times...
+Disconnected from server!
+, left!
+Server is full, no new connections accepted for stability!
+Starting log save...
+----Online users----
+----Log----
+Log save completed.
+Failed to write log, possibly due to another program or security software interference.
+ Failed to write log.
+Recently used: 
+The card hold safety interval is the duration to ignore the next operation after pressing the card hold key. If the ignore duration is set to 0, the card hold may be forcibly ended right after it starts due to keyboard key bounce, so it is not recommended to modify it unless necessary.
+Ethernet
+After modification, please click Save at the top left corner. The changes will take effect the next time the network card is disabled and will not affect the currently disabled network card. It is strongly recommended that you first enable the currently disabled network card before modifying the target network card list, to avoid unchecking an already disabled network card and making it impossible to restore later.
+Please enter the new card hold safety interval: (up to three decimal places)
+Locker
+Locked!
+Network adapter disabled
+.
+ , but Dev mode not used, may be too late.
+ , TCP/IP protocol, but Dev mode not used, may be too late.
+Network adapter enabled
+Shader cache cleared.  
+Failed to clear shader cache!
+, TCP/IP protocol.
+Disconnection error, game process not found. Switching to disconnect all software.
+Disconnection error, game path not found. Switching to disconnect all software.
+Network rule created to block internet access.
+Network rule removed to unblock internet access.
+Block internet operation too frequent, ignored.
+To broadcast to other players, network will be blocked for
+ms.
+Disable network card operation too frequent, ignored.
+ms to disable network adapter.
+No items selected!
+No target archive selected!(If your save file is not here, please click the plus sign to add it, But the best way is still to run the game once and let it create it automatically.)
+Solo session failed, game process not running.
+According to settings, solo the session operation ignored.  
+Encoding failed! The file might be in use, so this part won't be included in the code, but it will keep processing the other parts. You can also try again after making sure the game is closed.
+File not found. If you haven't changed any key or controller settings, it's normal that it's missing. This part won't be included in the code either, but the rest will continue processing.
+The code segment corresponding to the main configuration file was not found; processing of other parts will continue.
+The code segment corresponding to the main configuration file has been destroyed; processing of other parts will continue.
+The code segment corresponding to the key configuration file was not found and will continue processing other parts.
+The code segment corresponding to the key configuration file has been destroyed and will continue processing other parts.
+Restore network operation too frequent, ignored.
+Blocking network communication is typically used for free purchase of name diamonds and equipment, free purchase of pre-apocalypse items, and free acceleration of bunker research, etc. Once activated, you won't be immediately kicked out of the online game but the operation will fail and you need to wait for the yellow circle in the lower right corner to disappear before reconnecting to avoid successful saving and deduction of money. The principle is to create a new Windows Firewall rule or WFP rule to prohibit all programs or only prohibit GTA from connecting to the internet, which is similar to the function of prohibiting program connection in security software. It is recommended to prohibit all programs to avoid the firewall and WFP being ineffective due to the proxy mode of the accelerator (or directly specify the process that will be disconnected from the network as the accelerator process. If you need to use only cloud server or only player connection, you need to change the accelerator to routing mode. If only the TCP protocol is disconnected, there is no need to change the routing mode.). If a third-party security software takes over the Windows network firewall function, this feature will be ineffective. Please use WFP mode instead. 
+Disable network card hardware, generally used for emergency disconnection during Diamond Casino vehicle spins, retaining heist finales, etc. After disconnection, you will be kicked from online mode quickly, similar to unplugging the network cable. The principle is to disable the network card with the specified name. The network card name can be selected from the dropdown. If it fails or the correct network card is not found, enter it manually. Refer to the text tutorial for details.
+<Close>
+Invalid game minimize mode value!  
+Update or fix QuellGTA: The software is still in public preview, the version may have bugs, file corruption may also cause problems, re-downloading the new version may fix these problems and add new features, it is recommended to download the latest version in time.
+You can directly click OK to use online updates, or click Cancel manual download, the network disk link may be invalid, if it is invalid, please visit www.MageAngela.cn, Find the latest version address.
+Clearing data will lose all settings. This can be used to repair corrupted configurations or uninstall. The program will exit afterward. Continue?  
+(To only view the data directory, click Cancel.)  
+, please check if the file is set to read-only!
+Thank you for using, goodbye!
+Click OK to exit and cleared data.
+Clear canceled! No changes made.  
+Click OK to open data directory.  
+Enter [domain:port] (Do not include http prefix or symbol suffix.)  
+Enter the room you want to join (currently public squad).  
+Set the same room password as teammates to synchronize operations. Using a public squad may be affected by other players' actions, unexpectedly closing the game.  
+Room not changed!  
+Server stopped!
+Settings file cleaned successfully: 
+Failed to clean the settings file: 
+The principle is to delete the pc_settings.bin save file.
+Generally used for repeated game crashes causing
+<Unable to load saved data from Rockstar cloud servers at this time>  
+error. The file will be backed up as .bak, existing .bak will be moved to recycle bin. Continue?  
+Session lock enabled. It is recommended to disable it first to avoid affecting online access!  
+Repair completed. Restart the game to test!  
+Repair canceled! No changes made.  
+All statistics are only saved locally and are not uploaded or shared.
+Do you zero in on data?
+The data has been reset.  
+Automatic hang-up: long time without operation, simulated operation:
+Instantly stop by switching characters and canceling. When the vehicle is on all four wheels, it will stop instantly. When upside down, it will hover in mid-air. Only triggered by hotkey.  
+Auto left-click for picking up items or drilling vault doors during heists, saving effort and mouse lifespan. Only triggered by hotkey.  
+When using IP-only protocol, Dev mode will not work.  
+Refresh failed. Unable to locate GTA5. Run GTA5 at least once and click "Refresh status"!  
+Refresh failed. GTA5 files are incomplete or not the game process. Run GTA5 and click "Refresh status"!  
+No session encryption lock file found! Choose to create one!  
+Session encryption lock file found, password:  
+Creation failed. Unable to locate GTA5. Run GTA5 at least once and click "Refresh status"!  
+The password must not contain the vertical bar symbol!
+Creation failed. No password entered!  
+The software path has been updated!
+Creation successful. Restart the game to apply. Password:  
+Creation failed. File is in locked! (Please make sure the game is fully exited and that the game directory is not set to read-only)
+Deletion failed. Unable to locate GTA5. Run GTA5 and click "Refresh status"!  
+Deletion failed. File is in locked! (Please make sure the game is fully exited and that the game directory is not set to read-only)
+Deletion successful. Restart the game to apply!  
+Please enter a custom hang-up timeout: (in seconds, default 120)
+Enter private room password:  
+(Leave blank to return to public.)  
+Joining  
+Change process name to make it usable for killing processes in other games. However, it is only recommended to use the "Kill process" feature, as other features may not work for other games (e.g., solo session, session lock) and may cause crashes or bans. It is strongly advised not to use features other than "Kill process"!  
+(The program does not restrict features based on process names. Use your own judgment.)  
+Enter new process name:  
+The principle is to restore QuellGTA's backup of pc_settings.bin.  
+If you have not clicked the [Repair] or [Backup only] button, this operation will do nothing. It is recommended to click No to exit. Continue?  
+Restore completed. Restart the game to test!  
+Restore canceled! No changes made.  
+Immediately back up pc_settings.bin as .bak. Existing .bak will be moved to recycle bin. Continue?  
+Operation completed. Restart the game to test!  
+Operation canceled! No changes made.  
+If you need to manually control the carding, you can enter 0, which means that pressing the hotkey will start the carding and releasing it will stop the carding. You can also enter a larger value (such as 999) to start the carding with one press and stop it with another press.
+To change the carding mode, go to Settings and click the carding mode checkbox.
+Enter new interval time: (Up to 3 decimal places.)  
+(Leave blank to restore default.)  
+Solo the session time under 10 seconds may not work.  
+Too long solo the session time may crash the game.  
+Message operation too frequent.  
+Enter message content: (Max 64 characters.)  
+Dev mode does not work with IP-only protocol.  
+The Angela Shortcut Engine Gen 3 supports three operating modes:
+2. Polling Mode (Power Saving): Active detection, querying the keyboard every 40ms to check whether the set hotkey is being pressed (25 ticks/s). Since it can only query keyboard information, mouse side buttons cannot be used as hotkeys. Additionally, if a key is pressed between two ticks, the hotkey will only be triggered in the next tick, causing a slight delay; if the key is pressed for too short a time, it may be missed. However, polling mode does not interfere with the keyboard message path, and the fixed cycle will not increase load due to high keyboard reporting rates, potentially improving battery life on laptops.
+3. Proxy Mode (Compatibility): Passive triggering, by intercepting keyboard and mouse messages and checking key events one by one to determine if a hotkey has been activated. With multiple safeguards such as hotkey self-detection and automatic engine restart when a key fails, hotkeys are guaranteed to be immediately recognized, and mouse button information can also be used as hotkeys. However, proxy mode participates in the keyboard message transmission (like adding a checkpoint in the keyboard message path), which can increase keyboard delay in games on lower-performance computers and affect gameplay feel.
+Recommendation: Prefer using Raw Mode and Polling Mode. If you need to use mouse side buttons as hotkeys, or if Raw Mode sometimes doesn  t work properly, you can enable Proxy Mode as well. All three modes can work simultaneously as backups for each other. If none of the three modes are enabled, hotkeys will not work.
+Timer feature not enabled.  
+Start timer  
+Stop timer  
+Reset timer  
+Changing this setting will restart the timer and current timing data will be lost. Do you want to continue?
+To avoid interruptions, saved logs will not open automatically when this feature is enabled.  
+Front AFK in progress...  
+AFK ended: Canceled by user.  
+Overrange
+AFK operation too frequent, ignored.  
+AFK failed: Game not running.  
+AFK started: Right-click to cancel.  
+AFK started: Press S to cancel.  
+AFK ended: Right-click released.  
+AFK ended: S key released.  
+AFK ended: Game no longer in foreground.  
+Hotkey engine manually restarted!  
+Paste operation in progress. If it takes too long, restart the software.  
+According to settings, paste operation ignored.  
+Paste operation completed.  
+QuellGTA offline feature is enabled. Cannot use network restore.  
+Step 1: Enable network adapter  
+All visible network adapters will be enabled, including manually disabled ones. Disable again if needed.  
+Click Cancel to skip.  
+Step 2: Enable TCP/IP protocol  
+IPv4 and IPv6 protocols for all visible network cards will be enabled, including manually disabled ones. Disable again if needed.  
+Step 3: Delete firewall rules  
+All QuellGTA-created firewall rules will be deleted.  
+Step 4: Reset IP stack and DNS cache  
+Executes "netsh int ip reset" to fix IP-related internet issues but may disable VPNs. Re-enable VPN afterward.  
+Step 5: Reset LSP  
+Executes "netsh winsock reset" to fix VPN-related internet issues but may disable VPNs. Re-enable VPN afterward.  
+LSP reset requires a system restart. Save files and restart manually!  
+All repair steps completed. Test your network!  
+Graphics settings file (settings.xml) not found. Run GTA5 at least once!  
+Disabling shadows may improve FPS but cause lighting issues indoors or underground. Continue?  
+Current ShadowQuality:  
+(0 = disabled.)  
+Enter value: [0] Disabled, [1] Normal, [2] High, [3] Very High  
+Warning: Value exceeds safe range and may degrade performance or crash the game. Confirm you understand the risks!  
+Modification canceled. No changes made.  
+No value entered. Modification canceled.  
+Game is running. Changes require a restart to take effect.  
+Settings modified. Restart the game to apply. To re-enable, adjust shadow quality in-game without restarting.  
+If other players with traffic enabled are nearby, disabling traffic may not work. Move away or ask them to disable traffic. Continue?  
+Current CityDensity:  
+Current PedVarietyMultiplier:  
+Current VehicleVarietyMultiplier:  
+(-2.000000 = disabled, -1.000000 = very low.)  
+Enter value: [0] Normal, [-1] Very Low, [-2] Disabled  
+Settings modified. Restart the game to apply. To re-enable, adjust population density and variety in-game without restarting.  
+Running this will immediately close Rockstar Launcher, Social Club, and related components. Continue?  
+Failed to modify Rockstar Games Launcher data in AppData. It may not have closed fully or is not installed. Restart the computer and run this without launching Rockstar first!  
+Rockstar Games Launcher data in AppData not found. It may not be installed!  
+Failed to modify Rockstar Games Launcher data in Documents. It may not have closed fully or is not installed. Restart the computer and run this without launching Rockstar first!  
+Rockstar Games Launcher data in Documents not found. It may not be installed!  
+Failed to modify Rockstar Social Club data in Documents. It may not have closed fully or is not installed. Restart the computer and run this without launching Rockstar first!  
+Rockstar Social Club data in Documents not found. It may not be installed! 
+All repair attempts completed. Launch the game to test!  
+Enter ID to query: (Leave blank to query yourself.)  
+(First query may require logging into your Rockstar account.)  
+Tip: Killing the launcher while disabling the network can make you go offline faster, and you can reconnect directly from offline to online without having to restart the game. Of course, you can also kill it when the game starts; aside from some error messages, it won't affect gameplay. If you kill both the process and the launcher at the same time, the 'Start Game' button in Steam or Epic will turn green faster, reducing the wait time for restarting the game and avoiding retry upload prompts. (However, if there are other applications named Launcher.exe, they will be killed as well, so be careful to check for any Launcher.exe applications other than the Rockstar launcher to avoid unnecessary trouble.)
+Firewall rule created to block P2P ports.  
+Firewall rule created to block all ports except P2P.  
+Block internet operation too frequent, ignored.  
+Firewall rule created to block Rockstar server ports.  
+Enhanced Edition  
+Classic Edition  
+Auto-detected: Switched to Enhanced.  
+Auto-detected: Switched to Legacy.  
+Enhanced Edition does not support this feature. Modifying will prevent the game from launching! Use only for data viewing. Continue?  
+Your last startup failed, possibly due to a crash caused by conflicts between some features and the host system! 
+Enter new nickname:  
+Set the pc_settings.bin to read-only immediately, do you want to continue?
+Immediately cancel read-only on pc_settings.bin, do you want to continue?
+The principle is to delete all content from pcsetting.bin except for the game settings. 
+You may need to log in online again after starting the game later to unlock all functions. Do you want to continue with the operation?
+Solo the session failed. Invalid mode. Please reselect!  
+1. Suspend process mode has good compatibility, works in all versions and modes, but only for solo sessions (cannot crash the game).  2. Suspend window mode works well for Classic Edition but is unstable for Enhanced Edition. Works in fullscreen and windowed modes. Prolonged use may crash the game.  3. Right-click menu mode simulates manual solo session by sending system menu commands but only works in Enhanced Edition windowed mode.  4. Firewall rule mode: block port 6672 by creating a firewall to prevent single-player disconnections, then restore it.
+This mode is unstable in Enhanced Edition and may not always work. Enhanced Edition players are advised not to use it!  
+Note: This mode only works in Enhanced Edition windowed mode!  
+Enter SteamJVP. Use URL encoding for symbols!  
+Direct session join only works in Enhanced Edition!  
+Direct session join only works for Steam version!  
+Link sent to Steam...
+Direct session join not enabled!  
+Fail to join this bot, the bot may have gone offline!
+Join session requests too frequent. Wait for the previous one to complete! 
+Do you use online update downloads? (or fix QuellGTA online)
+Downloading...  
+Download failed! Try downloading from cloud storage!  
+Read carefully and test these features first to avoid disconnection failures!
+Custom processes do not support session lock!  
+GTA5 Enhanced session lock by k7Ysh5A_41. Source: https://space.bilibili.com/175659130  
+Steam is not running. Cannot get SteamJVP!  
+Failed to get. Join a friend first!  
+Last joined time:  
+SteamJVP retrieved:  
+Copied to the clipboard, you can paste it directly into other software. If you want to save this data to custom fields, please click [OK]!
+Failed to retrieve!  
+Bot list and session lock info preloaded successfully!  
+To maintain service quality, wait 60 seconds after retrieval. Next retrieval in:  
+Bot list retrieval completed!  
+Update files ready. Restart to apply. Restart now? 
+Downloading  
+Failed to get path. You may not have installed the game. Run it first for auto-detection.  
+No custom language file found. Default file written to "Custom.als" in the directory. Refer to its format for translations!  
+Xiaoku lxcoo: Open the game map, select the blue mission icon closest to your destination, press Space and Enter to start the mission. Then press the direct session hotkey (default Alt+Q), wait for the join prompt, and press Enter a few times to teleport. If you see "Unable to join session due to incompatible assets," this is normal. Keep pressing Enter to complete the teleport. If you cannot connect, it may be due to network issues or the bot being offline/maintained.  
+、、、
+、、、
+Current:  
+Exists:  
+Enter profiles name:  
+Deleting profiles will lose all settings. Continue?  
+Enter profile number (positive integer):  
+Invalid profile number. Enter a positive integer!  
+Profiles number does not exist!  
+Save operation completed!  
+Received solo, start broadcast, from:
+You can't change the launch options while the game is running. Please make sure the game is completely closed before modifying them. Do you want to continue?
+The operation has been successfully completed! You'll need to restart the game for the settings to take effect!
+Copy the executor to the data directory to avoid being killed by antivirus software, if the directory has already installed other versions, then it will be overwritten (usually used for manual updates), and a desktop shortcut will be automatically created after the copy is completed (Later, you can press Ctrl Alt Q to quickly open the software), Do you want to continue?
+Invalid port, default value 55378 will be used!
+Please enter the UDP port you want to use (default 55378), if you are not sure, please leave it as default!
+Please enter the volume you want to use, 1-100, 0 is off.
+The currently running program has already been installed and cannot be re-installed!
+Enter the interval time, in seconds(-1 for off)
+Error interval time
+Received solo, stop broadcast, from:
+The service is running...
+The service is not running
+The component is not installed
+You have manually controlled the fingerprint service, and the auto-start-stop function will be disabled!
+Please enter the shortcut key to use (please use F1-F12 keys as hotkeys):
+Please enter the interval between simulated key presses (users with lower fps should increase the delay):
+Please enter the fingerprint screenshot similarity: (do not below 0.85)
+Reversed
+Failed to get!
+The list of public service services has been successfully obtained!
+Latest Ver:
+Software usage time (hours):
+Game Runtime (hours):
+Kill Processes (times):
+Number of network disconnections (times):
+Number of automatic cards (times):
+The corresponding scheduled task has been added! At the same time, it will automatically start running from the tray, please pay attention. (If you are using Windows Fast Startup, you need to restart the system once for the schedule to take effect.)
+The corresponding scheduled task has been deleted! 
+You must first install the software into the data directory, and start the software from the data directory to perform the corresponding operations!
+ version is an optional update, please choose whether to update based on your needs. 
+ version is an urgent update, it is recommended that you update immediately! 
+ version is an important update, it is recommended that you update immediately!
+Please enter the key code manually, which can be queried by https://tool.ip138.com/keycode/.
+An invalid key code has been entered, and if you can't understand it, use the edit box to get the key code automatically.
+Hold:
+Release:
+Delay:
+Hold:
+Release:
+Important: Do not include shortcuts that trigger custom macro functions in the macro action sequence, otherwise it may be terminated during operation, or even cause a dead loop, unable to stop, if encountering a dead loop, please use the task manager to stop. Features are being improved and may affect software performance, thank you for trying out.
+Important: Loading the file will cause the current sequence to be overwritten, it is recommended that you export the current sequence to back up, please confirm whether you really want to overwrite it?
+This feature is triggered only using hotkeys. You can right-click this button to edit the macro sequence directly. (Or go through Settings - Macro Simulation - Custom Macro)
+The custom macro is running and will now force stop the macro for editing!
+Start.
+Completes.
+Force terminate.
+The operation is complete!
+The operation is complete! (Preset sequences, usually applicable to FPS higher, may not work properly on your FPS, you can adjust the latency between operations, test repeatedly in order to support your FPS.)
+Please enter the opacity, range 0-255, the lower the more transparent:
+Getting information...
+Invalid values!
+Warn! You use the game toggle character key single key as a hotkey for other functions, so when you use the instantaneous hover macro function, it will simulate the key, causing other functions to be triggered incorrectly, please consider modifying the duplicate hotkey, or use other toggle character keys. (If you don't have instant hover turned on, or are using a disconnected hover method, you can ignore this tip!)
+Invalid time format, so no timer is set!
+Please enter the time you want to jump to (example 12:34:56.78, or no hour  34:56.78)
+Warning! Your account has been disabled, access to the server's online features is prohibited!
+Server provides information!
+Please enter the refresh rate: (Unit FPS, range 1-1000)
+The handshake package has timed out. The address you entered may not be using the Angela Network Engine Gen 2, such as earlier versions of QuellGTA, or other unrelated servers. Please check the connection information you entered and the version of the other party!
+Connection failed! Disconnected from the server while waiting for the handshake package!
+The tray icon application failed, and the minimize tray feature has been automatically closed. Please check if any antivirus software has blocked the operation!
+Sometimes, incorrect command line additions, MODs, or offline modifiers can cause game client crashes and other issues. Performing this operation will delete all client files except for game resource files. If you have installed ASI-MOD, it will also be removed. After completion, you will need to open platforms like Steam/Epic to check file integrity to re-download the client files. 
+Please confirm that you have read and understood the operation process!!! Do you want to continue?
+[Please reconfirm that you understand the content, do you want to continue?]
+Please select the game installation directory.
+Deletion failed:
+The file deletion process is complete. Please open Steam/Epic to check file integrity to re-download the client files.
+You did not select a directory or the selected directory is not a game directory!
+This feature is used for sharing game files across multiple platforms. For example, if you own a game on both Steam and Epic and only want to use one copy of the hard drive space, first download the game on Platform A, install and launch it normally, then exit the game. Next, launch Platform B, start downloading, and cancel after progress appears. Then open QuellGTA's sharing feature and select the game path. The software will create links for the rpf files and the update and x64 folders. Then Platform B will resume downloading, directly enter the verification process, and automatically complete the client content, allowing you to play normally. 
+Have you understood this and completed all the preparatory steps?
+File linking completed! Now start Platform B, cancel the download, and start it again. It will directly enter the verification process and automatically complete the client content, allowing for normal gameplay.
+Please select the game path for the Platform A (already installed and playable).
+Please select the game path for the Platform B (a directory without the game installed).
+Do you need to watch a video tutorial of the operation process? (Go to Bilibili to view the video operation process) 
+Please confirm that the above address is correct. After starting the link, the software will temporarily stop responding. Please sit back, relax, and patiently wait for the operation to complete!
+Is the account you want to add a Enhanced version? 
+Please enter the account ID.
+Deleting the account files will result in the loss of: key settings, offline saves, and main game settings. Please make sure you know what you are doing! Do you want to continue?
+Mission Failed!
+WFP initialization failed, unable to load the WFP program.
+、、、
+、、、
+、、、
+Please enter the click rate (unit CPS, up to three decimal places can be entered, default 5, maximum 12)
+Do you want to copy the currently running software to the data directory? (This is generally used for installation or manual updates.) A desktop shortcut will be automatically created after the copy is complete (Later, you can press Ctrl Alt Q to quickly open the software). If you only need temporary use, please click No, and the software will continue to run in place until you run another version of the software.
+The input method is locked to English, which can minimize issues where the game gets stuck due to the input method (such as the   Press E   prompt not appearing near interactive elements) or when pressing E has no response. The software will automatically switch the input method back to English at regular intervals, and the frequency can be set in the "Switch Frequency" option. If you need to input Chinese in the game, press the "Temporary Stop" key Alt+E. After detecting that the "Enter" key or "ESC" key (for confirm or cancel in the game) has been pressed, the software will cancel the temporary stop function and continue to lock the input method.But it should be noted: if the input method is already stuck, enabling this feature will not resolve it. This function is only preventative. If it is already stuck, you will still need to input text to fix it, and using temporary stop may also potentially cause a crash.
+Is the game path correct?
+Should the Battleye-related files be deleted and reinstalled? (Both the Legacy and Enhanced versions will be uninstalled, and each will need to be reinstalled afterward)
+Do you want to try reinstalling now? Or have it automatically install the next time you launch the game. (If installed now, you may see the 'Please run with the launcher' error, which can be ignored)
+The plugin is not installed yet, please install the plugin first! 
+Please enter the duration for pushing the joystick (ms,defult 1000)
+Please enter the target frame number, range 1-999, enter 0 for unlimited, leave blank for no modification
+If you can't find the RTSS program, you can't use the auto-start RTSS function, you may not have installed it yet, or the installation is incorrect, please download and install RTSS correctly, if you confirm that RTSS has been installed and it can start normally, please start RTSS manually every time.
+Since the game profile will take precedence over the global game, you must manually open the RTSS window to delete the game process configuration (such as GTA5.exe, GTA5_Enhanced.exe), otherwise the lock frame modification will not take effect.
+Please enter the target number of frames, range 1-999, input 0 is unlimited, input -1 or leave blank to disable the current preset field, and it will be skipped when switching.
+This function is used to control the frame lock option in RTSS, quickly lock frames with hotkeys, switch multiple gears, built based on the open source project xanderfrangos/rtss-cli, first you need to install RTSS (RivaTuner Statistics Server), you can find the link in the menu, you can also install MSI Afterbunner (MSI Small Airplane)) to install RTSS automatically, Set the desired frame rate level below the menu, then press the hotkey (default Alt 5) in-game to switch between different frame rate levels.
+Set preset A 
+Set preset B 
+Set preset C 
+The frame lock feature is not enabled!
+Please enter your personal signature. (Chinese is not supported when displayed using RTSS. When using software floating window, Chinese can be displayed, but please pay attention to the number of characters to avoid exceeding the window range).
+Please note that after enabling RTSS display, the software floating window will automatically hide. If you have not installed RTSS or have not enabled screen overlay, nothing will be displayed. RTSS has a relatively low refresh rate, so it is normal to experience some delay between your actions and the display. RTSS does not support displaying Chinese characters. If you are using a personalized signature, please do not enter Chinese characters when displaying with RTSS, otherwise it will show garbled text.
+This feature is used to change the avatar displayed in the Home menu. The principle is still to fake a selfie. You now need to provide a square image with a 1:1 ratio (providing a 470x470 image will allow lossless import). Of course, you can use any image, but it will be forcibly stretched into a square, causing distortion. If you have your image ready, please click OK.
+Image loading failed!
+The image you provided is not the standard 470x470 size. It will now be forcibly stretched to the standard size, which will result in reduced quality, distorted proportions, and other distortions. Additionally, resampling may take varying amounts of time depending on the original image size and your computer's performance. During processing, the program may become unresponsive. Do you want to continue?
+The image file size exceeds the limit. It is recommended that you choose an image with a simpler composition or manually compress a 470x470 resolution image. The software will import it without loss.
+Do you want to save to the above path? (Based on your most recently used save data.) Otherwise, you will need to manually select a path.
+Failed to write PGTA5 file. The path may not exist or the software may not have sufficient permissions.
+Try preset URL
+This feature periodically reads the game logs, compares the time the last cloud save was successful, records the cloud save time, and compares it with the time when the process was killed or the network was disconnected. If the game had just saved successfully before being terminated or disconnected, it indicates that the Dark God (sin progress) may reset or mission rewards may be lost; otherwise, it provides peace of mind. Once enabled, the save time will be logged each time in the run log box below. The Dark God evaluation is only conducted when a process is killed during multiplayer.
+Time since last successful save:
+The game completed a cloud save just before you killed it, so your cloud Dark God progress may have been reset. Please kill the process earlier next time, avoid using personal vehicles if possible, to prevent simultaneous death and vehicle destruction. Keep up the good work! (If you don  t need this evaluation displayed, go to Tools - Record Cloud Save Success, and uncheck: Retain Dark God progress evaluation.)
+Cloud save successfully completed!
+(This time is read directly from the save file and recorded by the game, there may be about a one-minute discrepancy.)
+Process Guard: The software was closed unexpectedly! This may be caused by a crash due to conflicts, or it was terminated by other software.
+Image saved successfully! Please enter the game, press P or ESC to go to the pause menu, then go to the photo album. Move the cursor to the image you just imported, press Ctrl to upload, then click the change avatar button again, select 'Choose Avatar', refresh the list, pick the avatar based on the preview, and click confirm. The change has been successful. Usually, it takes about 10 minutes to sync to all Rockstar games. If you can't find the uploaded image, the network might be slow, so please wait a bit and try again. [It's recommended to complete all the steps above before clicking confirm to avoid forgetting any step].
+After enabling this feature, the current settings will be used as the configuration for the version selected in version switching. If you want to use the current settings as the configuration for another version, please disable this feature first, switch to the desired version, and then enable this feature again. If you need to load another save or paste from code, the feature will automatically turn off. You can then select the desired version in version switching and enable the feature again to apply the overwrite. 
+This feature will be unavailable when using 'Custom Process'.
+Non-professionals should not modify this at will, otherwise it may cause issues such as game settings being corrupted, settings not being readable, game instability and crashes, failure to start the game, or inability to enter online mode. If these problems occur after you have made modifications, please use the repair settings to delete the pc_settings.bin file, then restart the game. The game will recreate the file, but your other settings (such as brightness and mouse sensitivity) will also be lost.
+You have set a mouse hotkey, but Agency mode or pass-through mode is not enabled. The mouse hotkey will be ineffective. Do you want to continue? (polling mode does not support mouse buttons)  
+The trigger hotkey is invalid, please reset it!  
+The corresponding macro file could not be found, please reset it!  
+You haven't selected any items, they will be added to the end! 
+Testing requires saving the mission. After clicking OK, you will be redirected to the mission website. Please click to save it. If the game is running, return to Story Mode, then re-enter Online, and then start the mission to test.
+1. Pass-through Mode: Passively triggered, it works by directly accessing keyboard and mouse hardware to obtain raw data, determining whether a hotkey has been triggered. It features multiple safeguards, including hotkey self-detection and automatic engine restart upon failure, ensuring hotkeys are received immediately. It also supports receiving mouse button information simultaneously, allowing mouse buttons to be used as hotkeys. Pass-through mode does not participate in keyboard message transmission, so it does not cause additional input delay, but on high-report-rate keyboards and mice, it may slightly increase CPU usage.
+Game has been closed. Do you want to exit QuellGTA?
+If you experience frame stuttering in the game after enabling QuellGTA, please try this option first, and if it does not work, then consider fixing high CPU usage. Currently, optimizations for QuellGTA's GPU usage are being applied. To maximize GPU performance savings, the following settings will be adjusted: Simple Timer (set to off), Simple Crosshair (set to off).
+If you experience frame stuttering in the game after enabling QuellGTA, please try the fix stuttering option first, and if it does not work, then consider fixing high CPU usage. Currently, optimizations for QuellGTA's CPU usage are being applied. To maximize CPU performance savings, the following settings will be adjusted: Macro Simulation Key - Auto Fingerprint (set to off and disable automatic start/stop with the game), English Lock (set to off), Hotkey Settings (turn off passthrough mode and proxy mode, only enable polling mode), AFK Anti-Kick - Simulated Controller AFK (set to off), Control RTSS Frame Lock (set to off), Multi-Slot Custom Macros (set to off).
+Please enter the number of times this macro should run: (range 1-99999)
+The software has not been downloaded yet, or it has been moved. Please download the software from the webpage that will pop up shortly, then click this button again while the software is running. The location of the software will be automatically recorded, and it can be opened automatically next time. (If you have moved the software, please manually open it first and then click this button to update the path.)
+GTA5 installed on your computer was not found, please manually specify the platform to launch!
+The components that block internet access or disable the network card will be removed and reinstalled later. Your settings and installed external plugins won’t be affected. Do you want to continue?
+!!! This comes with quite a few bugs, please make sure to read carefully!!! 1. Opening two QuellGTA at the same time will prevent updates (files are used by another process). 2. Creating rooms and using UDP commands won't work (port conflicts) unless you manually specify different ports each time. 3. Since RTSS is shared between the two processes, they might fight for control, causing RTSS display info to jump back and forth between the settings of the two programs. 4. Because the settings file is shared, only the last write will take effect, and simultaneous writes might even fail. 5. Time counters and intimacy stats might be written twice, recording one action twice. 6. The single card mode 3 might fail due to repeated operations. There could be many more issues caused by sharing, so unless you're debugging, do not run two QuellGTA at the same time.
+Auto Hack: Initialization failed, unable to load the AutoHack program. 
+Auto Hack: Started 
+Auto Hack: Forced stop 
+Auto Hack: Game is not in the foreground!
+This automatic hack comes from the open-source project GTA_auto_hack by igttttma. (The version built into the software is a simplified version, only supports the 7-in-1, including slider, premium fingerprint, island fingerprint, island number search, island arithmetic, flashing access control (memory test), and All-Fortune Bank) In the game, after pressing E to start the hack and your character pulls out the phone, you can press the auto-hack hotkey (default F9). Make sure not to press it later than when the matrix starts blinking. Then, you'll see a status bar with a black background and green frame in the top right corner (in windowed mode). Just take your hands off the keyboard and wait—the program will automatically recognize the type of access control and complete the hack. It will automatically exit once done. Pressing the hotkey again during the hack will interrupt it. It's recommended to play the game in borderless windowed mode. If the game screen is too small, fingerprint recognition may fail. [Note: If no hackable type is detected, the program will still keep scanning, which may cause frame drops in-game. It's suggested to only press the hotkey when you need it. If frame drops are severe, turn off the overlay drawing process.]
+Please enter the duration for each key press when simulating keyboard input(Reference value: Game 30FPS - 40ms; Game 60FPS - 20ms)
+Please enter the interval between each key press when simulating keyboard input(Reference value: Game 30FPS - 40ms; Game 60FPS - 20ms)
+After the software starts, how long should it wait before launching the game? (seconds)
+Some users encounter the error 'Game error, please restart your computer and the game.' This is usually caused by a conflict between RTSS and the game. This option will disable RTSS and prevent QuellGTA from automatically running RTSS. If RTSS still starts, please check if MSI Afterburner (the little plane) is running and close it.
+Auto Hack: Has been disabled!
+Game error. Please reboot and restart the game.
+The ultimate solution to the problem is to reinstall the stable version of the graphics driver. The video tutorial uses an NVIDIA card as an example, but the same applies to other brands.
+This action will delete the graphics settings file and will cause all graphics settings to be lost. Do you want to continue?  
+Graphics settings have been deleted.  
+Failed to delete graphics settings!  
+This action will delete the key bindings file and will cause all key bindings to be lost. Do you want to continue?  
+Key bindings have been deleted:  
+Failed to delete key bindings:  
+The Legacy version doesn’t have ray tracing, frame generation, or supersampling, so modifications can’t be made!
+Turning off ray tracing, frame generation, and super sampling can fix some game crashes. Do you want to continue modifying?
+The current Raytracing_Enabled is:
+PS: false means off, true means on.
+Please enter the value to use: false means off, true means on.
+Configuration updated. You need to restart the game for the changes to take effect. To turn it back on, you can adjust the related settings in the in-game graphics options without restarting.
+The current ResScalingType is:
+PS: [0] Off, [1] Stretch, [2] FSR1, [3] FSR3, [4] DLSS
+Please enter the value to use: [0] Off, [1] Stretch, [2] FSR1, [3] FSR3, [4] DLSS
+The current FrameGenType is:
+PS: [0] Off, [1] DLSS, [2] FSR3
+Please enter the value to use: [0] Off, [1] DLSS, [2] FSR3
+Couldn't find the code section corresponding to the graphics settings file, will continue processing other parts.  
+The code section corresponding to the graphics settings file has been destroyed, will continue processing other parts.  
+Couldn't find the current graphics file on this machine, probably because the game hasn't been started before. Can't replace CPU or GPU info. If transferring across machines, this will make the imported file invalid. Please run the game once before re-importing.  
+Auto AFK: failed, the game isn't in the foreground!
+JoySim: Plugin not installed! 
+The feature works by simulating a controller when you press the trigger hotkey (default is Shift, code 16). It pushes the left stick about 88% forward to achieve speed-running cheat. In the game, just press Shift (default) and your character will start speed-running automatically. In theory, this is even more effective than using the keyboard: you don’t need to switch weapons, the speed is more stable, and you run faster. If you’ve changed the run key in the game, you might need to manually adjust the trigger hotkey. For specific tips, click OK to watch the video. 
+Note: This version no longer supports the old controller AFK plugin. Please download the latest plugin immediately, or the controller AFK feature won’t work. (Later, you might need to manually enable the controller AFK again)
+Please enter the push angle: (Range 0-255, default is 224 for running speed hacks)
+Controller simulation: Created!
+Controller simulation: Removed!
+This option will disable controller speed hacking, turn off the controller's background AFK function, and immediately remove the virtual controller. You need to restart the game for it to recognize the real controller. Do you want to continue?
+Your trigger hotkey is Shift. When the 'Toggle On Press' feature is enabled, it will automatically hold down the Shift key, which will affect hotkey recognition. So when using Shift as the trigger hotkey, 'Toggle On Press' cannot be used!
+Turning on this feature will only create a virtual controller when needed and remove it immediately after. It’s strongly not recommended to enable this while the controller speed hack is on, or you’ll notice significant delays. Depending on your setup, it might take around a second to create. When using auto AFK, the program will compensate for the joystick holding time to match roughly the same duration as in persistent mode.
+If the interval between controller inputs is too short, the game might not detect the centering action, causing it to think the controller is being pushed continuously. The default value is 0.3, and it works fine at 60 FPS. If inputs often fail, try increasing the interval.
+(Logging has been disabled)
+The built-in software is a simplified version, only supporting 7-in-1 features, including slider, diamond fingerprint, small island fingerprint, small island number search, small island arithmetic, flashing access (memory challenge), and All-Fu Bank. For the full functionality, please download the official igttttma/GTA_auto_hack version (v1.7 or above), then choose the file here; the built-in version will be disabled. 
+The external hacking plugin no longer exists. Please go to Settings - Simulate Macro Keys - Auto Hack and re-select the external plugin. 
+For the latest unlocking-related download links, check the pinned comments in igttttma's latest videos, or download from Github: https://github.com/igttttma/GTA_auto_hack/releases.
+Process guardian: Restoring software state...
+Process guardian: Unable to connect multiple times, reinstalling...
+Please enter the pushing angle: (range 0-255, default is 255)
+Process Guardian: Cannot connect, and attempts to fix it failed, so 'No Response Protection' has been automatically turned off. 
+This mode will revert to the traditional parameter method and virtual controller communication, which will improve stability but may affect performance. It's recommended to enable it only if the usual operations don't work.
+Do you want to turn this feature on?
+Please enter the size ratio (the proportion of the crosshair's total size, range 0-100). 
+If the crosshair size is an even number, it may cause the pixel count to not divide evenly, resulting in the crosshair not being centered. If the crosshair is too small, it might be less than 1 pixel and not show at all. Please adjust the line thickness and crosshair size reasonably to ensure proper display. Thanks for your understanding.
+Please enter the aiming character (default is asterisk)
+Session encryption lock file found, but the file is corrupted and can't be read!
+The software has recovered from system sleep.
+Please enter the font name (you can check the font name using Windows Notepad)
+[This feature is still in the testing phase, regular users please do not use it.] You need to enter the SteamID64 of the user you want to add (you can find it by right-clicking your friend's avatar to view their profile and copying the numbers starting with 7656119 at the end of the URL). Then, make sure the friend's avatar is visible in your Steam friends window. If it's a group user, the user's avatar needs to be visible in the group list (scroll the list or use search to make the target user appear) in order to successfully retrieve it. [This feature is currently a bit cumbersome and not very user-friendly; we may consider optimizing or removing it later.]  
+Connection failed, you might need to restart Steam  
+Connection successful, and the correct SteamID64 was entered  
+Retrieval failed, item not found, maybe the friends window is not visible  
+Retrieval successful, joining the target game session...  
+Steam CEF is not currently enabled, do you want to enable it and restart immediately to apply?
+Failed to get, join link not found
+Please enter a webpage that contains BotJvp, starting with http:// or https://. (If you are a content provider, please include <SteamJVP>Your join link</SteamJVP> in the webpage so the program can recognize it correctly.)
+Waiting for the mission hasn't started yet  
+Getting...  
+Mission started, please join the session  
+Offline  
+Starting the mission...  
+Mission has begun!  
+Preparing the mission...  
+Waiting for the mission has started!  
+Waiting for the mission has ended!  
+After joining, please wait patiently for other players to join. If you can't join the session, the mission might have already started, please wait for the next time.  
+Please wait patiently for the bot to come online.  
+Please click Ready.  
+Please lock the order immediately.  
+This process may take a few minutes, please wait patiently.  
+Failed to retrieve, the link you entered is not supported, or the network is unstable...  
+Please wait for the next opening.  
+You didn't click to join in time this time, the waiting has automatically stopped.  
+Please confirm whether you have completed the CEO lock operation? (Note: When queuing as a CEO, please do not register as a CEO if you match a racing-type mission, otherwise you might experience cloud lag when entering the session. If you are using automatic mission queuing, make sure the queuing mode and duration are set correctly)
+The current bot might not be in the mission waiting screen, joining the session may fail, do you want to continue?  
+Attempted to join the session, for details, please check the action log at the bottom of the software.  
+Attempted to lock the order, for details, please check the action log at the bottom of the software.  
+Order locking is already in progress, no further action will be taken!  
+The mission waiting feature hasn't been activated yet!
+Request denied! Reason: The game isn't even running, how did you manage to get the CEO? 
+Unsupported bot state, please check if the version is compatible.
+The game crashed and waiting has stopped!
+Note, since the program can't tell if you've successfully joined, it will also trigger an automatic hang-up if joining fails!
+Refreshing crew info...
+API database download failed, will use the built-in version.  
+Switching guild:  
+The function will wait for a while before killing the launcher after detecting the selected event above.  
+Please enter delay time: (up to three decimal places)  
+Executing delay:  
+End failed, the launcher might not exist in the first place.  
+Ending the launcher in seconds  
+Failed to access SC, launcher not running or data expired.  
+Cannot connect to SC server, please check your network.  
+Data error, please restart the software and try again later.  
+Data successfully submitted to SC server.  
+Not enough guilds, cannot switch!
+Information has been successfully retrieved from the SC server. 
+The cid you entered is not on the list, so it might not be set successfully. New users are advised to choose from the list; using someone else's avatar cid won't work. Do you want to continue?
+Please enter the password for the token: 
+The password you entered is incorrect! If you have forgotten your password, please rebind it. 
+You have been typing the wrong password too many times recently; please try again later. 
+No existing tokens found, go add tokens quickly~
+Token switch successful! 
+Please enter the name of the token you want to use (to distinguish multiple tokens)
+The name has already been used; does it overwrite tokens with the same name? 
+Please enter the Base32 string token (provided on the webpage)
+The Base32 string you entered is incorrect, please re-enter it! 
+Please enter a password you can remember: (leave blank or click to cancel to no password)
+Please enter your password again: (Be sure to remember it, forget it and cannot be recovered)
+If the password is inconsistent twice, please re-enter it! (Be sure to remember it; if forgotten, it cannot be recovered)
+Token editing has been canceled. 
+Token creation successful! 
+Should you delete the currently selected token? 
+Please activate the token before proceeding. 
+This 2FA CAPTCHA calculator implements SHA-1, HMAC-SHA1, and TOTP according to RFC 6238 standards, mainly used for secondary authentication protection for Rockstar Games accounts, and also supports secondary authentication compatible with RFC 6238 such as Aliyun, GitHub, NeteaseMail, etc. All token keys are symmetrically encrypted locally using the password you provide, with no network transmission. Copy-paste code migration remains encrypted throughout the process (Note: migrating to other validator functions will expose plaintext; do not display in public). 
+This feature displays the key data plaintext to other validators. Please do not expose it in public to use this feature. Should you continue? 
+Customize the name displayed in other validators:

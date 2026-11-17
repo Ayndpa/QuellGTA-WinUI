@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.RepairPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuellGTA.Views">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Margin="28,20,28,28">
+            <TextBlock Text="修复" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Text="处理进不去线上、启动器报错、设置错乱等问题。需要先退出游戏。被删除的文件都会进回收站。"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+            <!-- 线上设置文件 -->
+            <TextBlock Text="线上设置文件（pc_settings.bin）" Style="{StaticResource SectionHeaderStyle}" />
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Spacing="8">
+                    <Grid>
+                        <TextBlock Text="存档目录" VerticalAlignment="Center" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                            <Button Content="打开目录" Click="OpenProfiles_Click" />
+                            <Button Content="刷新" Click="Refresh_Click" />
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel x:Name="ProfilePanel" Spacing="2" />
+                </StackPanel>
+            </Border>
+
+            <local:SettingRow Title="清洗设置文件"
+                              Description="只保留游戏设置，删掉文件里其余的线上数据。用于反复崩溃后提示「此时无法从 Rockstar 云服务器载入您保存的数据」。">
+                <Button Content="清洗" Style="{StaticResource AccentButtonStyle}" MinWidth="88" Click="Clean_Click" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="备份后删除设置文件"
+                              Description="把 pc_settings.bin 改名为 .bak，游戏会重新生成一份。游戏内的设置会全部重置。">
+                <Button Content="删除" MinWidth="88" Click="Delete_Click" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="备份与恢复" Description="备份为同目录下的 .bak；恢复时用 .bak 覆盖当前文件。">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="备份" Click="Backup_Click" />
+                    <Button Content="恢复备份" Click="Restore_Click" />
+                </StackPanel>
+            </local:SettingRow>
+
+            <local:SettingRow Title="只读" Description="设为只读后，游戏无法再改写这个文件。">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="设置只读" Click="ReadOnly_Click" />
+                    <Button Content="取消只读" Click="Writable_Click" />
+                </StackPanel>
+            </local:SettingRow>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="选项" />
+                    <CheckBox x:Name="OnlyLatestCheck" Content="仅处理最近使用的存档" Click="Option_Click" />
+                    <CheckBox x:Name="LegacyCheck" Content="使用旧版本清洗方式（保留所有 ID 小于 850 的项目）" Click="Option_Click" />
+                    <CheckBox x:Name="CleanOnExitCheck" Content="退出游戏时自动清洗" Click="Option_Click" />
+                    <CheckBox x:Name="DeleteOnExitCheck" Content="退出游戏时自动备份并删除" Click="Option_Click" />
+                </StackPanel>
+            </Border>
+
+            <!-- 其他文件 -->
+            <TextBlock Text="其他设置文件" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="删除画质设置文件" Description="删除 settings.xml，全部画质设置恢复默认。用于改了画质后无法进入游戏。">
+                <Button Content="删除" MinWidth="88" Click="DeleteGraphics_Click" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="删除键位设置文件" Description="删除存档目录下的 control\user.xml，全部键位恢复默认。">
+                <Button Content="删除" MinWidth="88" Click="DeleteKeys_Click" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="清理 DX12 着色器缓存" Description="用于修复 ERR_GFX_STATE 等着色器相关的错误。下次启动游戏会重新编译，首次加载较慢。">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <CheckBox x:Name="ShaderOnExitCheck" Content="退出游戏时自动清理" MinWidth="0" Click="Option_Click" />
+                    <Button Content="清理" MinWidth="88" Click="ClearShader_Click" />
+                </StackPanel>
+            </local:SettingRow>
+
+            <!-- 组件 -->
+            <TextBlock Text="游戏组件" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="修复 Rockstar 启动器"
+                              Description="结束启动器和 Social Club 的全部进程，把它们的数据目录改名为 .bak 后重新生成。之后需要重新登录。">
+                <Button Content="修复" MinWidth="88" Click="RepairLauncher_Click" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="修复 BattlEye 反作弊"
+                              Description="删除 BattlEye 的公共文件，下次启动游戏时自动重新安装。传承版和增强版的 BattlEye 会被同时卸载。">
+                <Button Content="修复" MinWidth="88" Click="RepairBattlEye_Click" />
+            </local:SettingRow>
+            <StackPanel x:Name="ExtraPanel" />
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.HotkeysPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuellGTA.Views">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Margin="28,20,28,28">
+            <TextBlock Text="热键" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Text="点击右侧的按键名称，再按下新的按键（可带 Ctrl / Alt / Shift，也支持鼠标中键和侧键），按 Esc 取消。鼠标左右键和滚轮从「鼠标键」菜单里选。"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+            <TextBlock Text="全局热键" Style="{StaticResource SectionHeaderStyle}" />
+            <StackPanel x:Name="HotkeyPanel" />
+            <TextBlock Text="自编宏的热键在「宏键」页里逐个设置。" Margin="2,4,0,0"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <TextBlock Text="高级热键" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="仅游戏前台时启用" Description="游戏窗口不在最前面时忽略所有热键。">
+                <ToggleSwitch x:Name="ForegroundSwitch" Toggled="Foreground_Toggled" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="仅在游戏运行时启用" Description="游戏进程不存在时忽略所有热键。">
+                <ToggleSwitch x:Name="RunningSwitch" Toggled="Running_Toggled" />
+            </local:SettingRow>
+
+            <local:SettingRow x:Name="EngineRow" Title="热键引擎"
+                              Description="使用底层键鼠钩子实现热键穿透。热键失灵时可以尝试重启。">
+                <Button Content="重启热键引擎" Click="Restart_Click" />
+            </local:SettingRow>
+            <StackPanel x:Name="ExtraPanel" />
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

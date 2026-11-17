@@ -1,0 +1,11 @@
+
+提醒：
+QuellGTA是免费软件，如果有人售卖，请立即退款并投诉。
+认准官网下载，不要从来历不明的渠道获取，不要下载其他人重新打包的版本。
+
+关于：
+QuellGTA是由MageAngela制作的用于结束进程、断开网络、自动卡单等功能的小工具。目前也支持了bot差传、战局锁等实用功能。
+
+鸣谢：
+傲弗拉、小苦lxcoo、仓鼠烤鱼、k7Ysh5A_4.1.、b23Matchstickman、OnelyMaker、TsukCy、童年一夢、Meridec残月、yum install -y money、小羊咩咩、M3351AN 渟雲、igttttma...
+以及为公益服捐款的热心用户（查看完整名单请点击主菜单-常用链接-扫码赞赏）

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.NetworkPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuellGTA.Views">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Margin="28,20,28,28">
+            <TextBlock Text="断网" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Text="「阻止联网」用防火墙规则断网，「禁用网卡」直接停掉网卡。这里设置它们各自断什么。"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+
+            <InfoBar x:Name="FirewallWarning" IsOpen="False" IsClosable="False" Severity="Warning"
+                     Title="Windows 防火墙被禁用"
+                     Message="防火墙断网功能无法工作，请开启防火墙，或改用「禁用网卡」。" Margin="0,8,0,0" />
+
+            <TextBlock Text="阻止联网（防火墙）" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="仅断开游戏进程"
+                              Description="只阻止游戏进程联网，其他软件不受影响。关闭后为全局断网。">
+                <ToggleSwitch x:Name="OnlyGameSwitch" Toggled="OnlyGame_Toggled" />
+            </local:SettingRow>
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="阻止范围" />
+                    <TextBlock Text="阻联选项用于卡单人战局，阻云选项用于阻止存档上传。"
+                               Style="{StaticResource CaptionTextBlockStyle}"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <RadioButtons x:Name="ScopeRadios" SelectionChanged="Scope_SelectionChanged" Margin="0,6,0,0">
+                        <RadioButton Content="全部流量" />
+                        <RadioButton Content="仅阻止 UDP 协议" />
+                        <RadioButton Content="仅阻止 6672 端口（P2P）" />
+                        <RadioButton Content="仅阻止 TCP 协议" />
+                        <RadioButton Content="仅阻止 80、443 端口" />
+                        <RadioButton Content="仅阻止指定的 Rockstar 服务器" />
+                    </RadioButtons>
+                    <StackPanel x:Name="ServerPanel" Orientation="Horizontal" Spacing="8" Margin="28,0,0,0">
+                        <CheckBox x:Name="CloudCheck" Content="云存档服务器" Click="Server_Click" />
+                        <CheckBox x:Name="TransactionCheck" Content="交易服务器" Click="Server_Click" />
+                        <CheckBox x:Name="JobsCheck" Content="差事服务器" Click="Server_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="禁用网卡" Style="{StaticResource SectionHeaderStyle}" />
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Spacing="4">
+                    <Grid>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="要禁用的网卡" />
+                            <TextBlock Text="一个都不勾选时，禁用所有正在使用的网卡。"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                        <Button Content="刷新" HorizontalAlignment="Right" VerticalAlignment="Center" Click="RefreshNics_Click" />
+                    </Grid>
+                    <StackPanel x:Name="NicPanel" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+
+            <local:SettingRow Title="仅禁用 TCP/IP 协议"
+                              Description="只解绑网卡的 TCP/IP 协议而不是停用整块网卡，恢复更快。">
+                <ToggleSwitch x:Name="IpOnlySwitch" Toggled="IpOnly_Toggled" />
+            </local:SettingRow>
+
+            <local:SettingRow Title="仅 IP 协议包含 IPv6" Description="同时解绑 IPv6 协议。">
+                <ToggleSwitch x:Name="IPv6Switch" Toggled="IPv6_Toggled" />
+            </local:SettingRow>
+
+            <TextBlock Text="杀启动器" Style="{StaticResource SectionHeaderStyle}" />
+
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="执行以下操作时，同时结束 Rockstar 启动器" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <CheckBox x:Name="LauncherKillCheck" Content="杀掉进程" Click="Launcher_Click" />
+                        <CheckBox x:Name="LauncherBlockCheck" Content="阻止联网" Click="Launcher_Click" />
+                        <CheckBox x:Name="LauncherNicCheck" Content="禁用网卡" Click="Launcher_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <local:SettingRow Title="执行延迟（秒）" Description="操作之后等待多久再结束启动器。">
+                <NumberBox x:Name="LauncherDelayBox" Minimum="0" Maximum="60" SmallChange="0.1" LargeChange="1"
+                           SpinButtonPlacementMode="Compact" Width="140" ValueChanged="LauncherDelay_Changed" />
+            </local:SettingRow>
+
+            <TextBlock Text="修复" Style="{StaticResource SectionHeaderStyle}" />
+
+            <local:SettingRow Title="尝试修复网络"
+                              Description="断网后网络没有恢复时使用：删除本程序创建的防火墙规则，启用所有网卡并重新绑定 IPv4 / IPv6 协议。你自己手动禁用的网卡也会被启用。">
+                <Button Content="修复网络" Click="RepairNetwork_Click" />
+            </local:SettingRow>
+            <StackPanel x:Name="ExtraPanel" />
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>

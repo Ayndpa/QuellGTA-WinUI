@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:QuellGTA.Views">
+
+    <ScrollViewer>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="920" />
+            </Grid.ColumnDefinitions>
+        <StackPanel Margin="28,20,28,28">
+            <TextBlock Text="关于" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock x:Name="VersionText" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <InfoBar IsOpen="True" IsClosable="False" Severity="Informational" Margin="0,12,0,0"
+                     Title="移植版尚未包含原版的全部功能"
+                     Message="未移植的都依赖原版内嵌的外部程序：RTSS 锁帧与显示、自动骇入、模拟手柄、修改头像、帮会切换、按 Steam 好友加入战局、进程守护、Devcon / WFP 断网模式。详见 README。" />
+
+            <TextBlock Text="统计数据" Style="{StaticResource SectionHeaderStyle}" />
+            <Grid ColumnSpacing="8" Margin="0,0,0,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock x:Name="KillCountText" Style="{StaticResource SubtitleTextBlockStyle}" />
+                        <TextBlock Text="杀掉进程次数" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock x:Name="CutCountText" Style="{StaticResource SubtitleTextBlockStyle}" />
+                        <TextBlock Text="断开网络次数" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock x:Name="SoloCountText" Style="{StaticResource SubtitleTextBlockStyle}" />
+                        <TextBlock Text="战局卡单次数" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Border>
+                <Button Grid.Column="3" Content="所有数据归零" VerticalAlignment="Center" Click="Reset_Click" />
+            </Grid>
+
+            <TextBlock x:Name="TimeText" Margin="2,2,0,0" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+            <TextBlock Text="关于 QuellGTA" Style="{StaticResource SectionHeaderStyle}" />
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <TextBlock x:Name="AboutText" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+            </Border>
+
+            <TextBlock Text="常用链接" Style="{StaticResource SectionHeaderStyle}" />
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <HyperlinkButton Content="QuellGTA 主页" NavigateUri="https://www.mageangela.cn/QuellGTA/" />
+                    <HyperlinkButton Content="MageAngela 主页" NavigateUri="https://www.mageangela.cn/" />
+                    <HyperlinkButton Content="插件仓库" NavigateUri="https://www.mageangela.cn/QuellGTA/QuellGTA_Plug.html" />
+                    <HyperlinkButton Content="GitHub 源代码" NavigateUri="https://github.com/mageangela/QuellGTA" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="许可与署名" Style="{StaticResource SectionHeaderStyle}" />
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,4">
+                <StackPanel Spacing="8">
+                    <TextBlock TextWrapping="Wrap" IsTextSelectionEnabled="True"
+                               Text="本程序是 QuellGTA 的修改版：2026 年 11 月由原版 build 0216 的易语言源代码移植到 C# / WinUI 3，功能和界面都有改动，不是 MageAngela 发布的官方版本。原作 Copyright © MageAngela（www.MageAngela.cn）。" />
+                    <TextBlock TextWrapping="Wrap" IsTextSelectionEnabled="True"
+                               Text="本程序是自由软件，按 GNU 通用公共许可证第 3 版（GPL-3.0）发布：你可以使用、修改和再分发，但修改后的版本必须以同样的许可证公开源代码。本程序不提供任何担保。许可证全文见程序目录下的 LICENSE.txt。" />
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <HyperlinkButton Content="原版源代码" NavigateUri="https://github.com/mageangela/QuellGTA" />
+                        <HyperlinkButton Content="GPL-3.0 全文" NavigateUri="https://www.gnu.org/licenses/gpl-3.0.html" />
+                        <HyperlinkButton Content="打开 LICENSE.txt" Click="License_Click" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="软件声明" Style="{StaticResource SectionHeaderStyle}" />
+            <Border Style="{StaticResource CardStyle}">
+                <TextBlock x:Name="DeclarationText" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+            </Border>
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>
