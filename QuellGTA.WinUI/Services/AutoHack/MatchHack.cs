@@ -5,7 +5,8 @@ namespace QuellGTA.Services.AutoHack;
 /// <summary>
 /// 「连线配对」骇入（games/match_module.cpp）：上方是三位数的目标值，左边三个数码管数字，右边三个倍率图标（×1 / ×2 / ×10）。
 /// 把每个数字连到一个倍率上，使「数字 × 倍率」之和等于目标值。
-/// 原版在画面上叠加显示算出来的算式；移植版不画叠加层，改为通过 Solved 事件把算式交给日志。
+/// 算出解法后在叠加层上标出每个倍率图标认成了几（×1 / ×2 / ×10），并在目标值右边显示整条算式；
+/// 同时通过 Solved 事件把算式交给日志。
 /// </summary>
 public sealed class MatchHack(IHackHost host) : IHackGame
 {
@@ -37,6 +38,136 @@ public sealed class MatchHack(IHackHost host) : IHackGame
     private enum InputPhase { None, EnteringRight, ConfirmingChoice }
 
     private Geometry? _detected;
+
+    // ───────── 叠加层（原版的 OverlaySnapshot / PublishOverlay / SyncOverlayWindow / DrawOverlay） ─────────
+
+    /// <summary>一个标签（OverlayText）：左边缘 x、竖直中心 y（屏幕坐标），字高，限制范围（游戏客户区），文字。</summary>
+    private readonly record struct OverlayText(int ScreenX, int ScreenCenterY, int FontHeight, HackRect ScreenBounds, string Text);
+
+    /// <summary>三个倍率标签 + 一条算式（OverlaySnapshot）。为 null 表示没有要显示的内容。</summary>
+    private sealed record OverlaySnapshot(OverlayText[] Multipliers, OverlayText Equation);
+
+    private OverlaySnapshot? _overlaySnapshot;
+    /// <summary>上一次交给叠加层的图元；内容没变就不再重画，null 表示当前没显示。</summary>
+    private List<HackShape>? _overlayShown;
+
+    private static int AnalysisToScreenX(HackFrame frame, int x) => frame.ScreenX + Round(x * frame.ToScreenX);
+    private static int AnalysisToScreenY(HackFrame frame, int y) => frame.ScreenY + Round(y * frame.ToScreenY);
+
+    /// <summary>算式文字，例如「3x2 + 5x10 + 4x1 = 60」。</summary>
+    private static string EquationText(int[] values, int[] multipliers, int[] solution, int target) =>
+        string.Join(" + ", Enumerable.Range(0, 3).Select(i => $"{values[i]}x{multipliers[solution[i]]}")) + " = " + target;
+
+    /// <summary>
+    /// PublishOverlay：记下要画的标签。字号按目标值格子的屏幕高度定；倍率标签放在图标圆环右边，算式放在目标值第三格右边。
+    /// 只是几次加减乘除，叠加层关着也照样记下，开关中途打开时能立刻显示（和原版一样）。
+    /// </summary>
+    private void PublishOverlay(HackFrame frame, Geometry geometry, int[] values, int[] multipliers, int[] solution, int target)
+    {
+        var targetScreenHeight = Math.Max(1, AnalysisToScreenY(frame, geometry.TargetDigits[0].Bottom) - AnalysisToScreenY(frame, geometry.TargetDigits[0].Top));
+        var labelFont = Math.Clamp(Round(targetScreenHeight * .27), 15, 44);
+        var equationFont = Math.Clamp(Round(targetScreenHeight * .25), 15, 40);
+        var labelGap = Math.Max(8, Round(frame.ScreenH * .012));
+        var equationGap = Math.Max(10, Round(frame.ScreenH * .022));
+        var screenBounds = new HackRect(frame.ScreenX, frame.ScreenY, frame.ScreenX + frame.ScreenW, frame.ScreenY + frame.ScreenH);
+
+        var labels = new OverlayText[3];
+        for (var row = 0; row < 3; row++)
+        {
+            var icon = geometry.MultiplierIcons[row];
+            var radius = Round(icon.Width / (2 * .78)); // 图标框是圆环半径的 0.78 倍，这里还原成圆环半径
+            labels[row] = new OverlayText(AnalysisToScreenX(frame, icon.CenterX + radius) + labelGap,
+                AnalysisToScreenY(frame, icon.CenterY), labelFont, screenBounds, "x" + multipliers[row]);
+        }
+        var lastTarget = geometry.TargetDigits[2];
+        var equation = new OverlayText(AnalysisToScreenX(frame, lastTarget.Right) + equationGap,
+            AnalysisToScreenY(frame, (lastTarget.Top + lastTarget.Bottom) / 2), equationFont, screenBounds,
+            EquationText(values, multipliers, solution, target));
+        _overlaySnapshot = new OverlaySnapshot(labels, equation);
+    }
+
+    /// <summary>ClearOverlayState：丢掉标签，正在显示的话收起来。</summary>
+    private void ClearOverlayState()
+    {
+        _overlaySnapshot = null;
+        HideOverlay();
+    }
+
+    private void HideOverlay()
+    {
+        if (_overlayShown is null) return;
+        _overlayShown = null;
+        host.Overlay.Clear();
+    }
+
+    /// <summary>
+    /// SyncOverlayWindow：有标签且叠加层开着就显示，否则收起。每帧调用一次；
+    /// 内容和上一次一样时什么也不做，所以叠加层窗口不会每帧重画。
+    /// </summary>
+    private void SyncOverlay()
+    {
+        var overlay = host.Overlay;
+        if (_overlaySnapshot is not { } snapshot || !overlay.Enabled) { HideOverlay(); return; }
+        var scene = new HackScene();
+        foreach (var item in snapshot.Multipliers) DrawTag(scene, item, false);
+        DrawTag(scene, snapshot.Equation, true);
+        if (_overlayShown is not null && _overlayShown.SequenceEqual(scene.Shapes)) return;
+        overlay.Show(scene);
+        _overlayShown = scene.Shapes;
+    }
+
+    /// <summary>
+    /// Segoe UI 粗体的大致字宽（以字高为单位），用来代替原版 DrawTextW(DT_CALCRECT) 量出的文字宽度。
+    /// 标签只有数字、x、空格、+、=，按字符估算就够了。
+    /// </summary>
+    private static int EstimateTextWidth(string text, int fontHeight)
+    {
+        double em = 0;
+        foreach (var c in text) em += c switch { ' ' => .27, 'x' => .52, '+' or '=' => .68, _ => .56 };
+        return Math.Max(1, Round(em * fontHeight));
+    }
+
+    /// <summary>
+    /// DrawOverlay 里的 drawTag：深色底的小牌子，外面一圈暗色光晕加一圈亮色细边，里面是带投影的文字。
+    /// 倍率标签是青绿色，算式是红粉色。原版是圆角矩形，这里用直角矩形近似；原版背景的纯黑是颜色键（透明），不画。
+    /// </summary>
+    private static void DrawTag(HackScene scene, OverlayText item, bool equation)
+    {
+        var fontHeight = Math.Max(12, item.FontHeight);
+        var textW = EstimateTextWidth(item.Text, fontHeight);
+        var textH = Round(fontHeight * 1.33); // Segoe UI 的行高约为字高的 1.33 倍
+        var padX = Math.Max(7, fontHeight / 2);
+        var padY = Math.Max(4, fontHeight / 4);
+        var left = item.ScreenX;
+        var top = item.ScreenCenterY - (textH + padY * 2) / 2;
+        var right = left + textW + padX * 2;
+        var bottom = top + textH + padY * 2;
+
+        // 标签不出游戏客户区：平时都在锚点右边，只有窗口化、空间不够时才挪进来
+        var safeMargin = Math.Max(4, fontHeight / 4);
+        int minLeft = item.ScreenBounds.Left + safeMargin, maxRight = item.ScreenBounds.Right - safeMargin;
+        int minTop = item.ScreenBounds.Top + safeMargin, maxBottom = item.ScreenBounds.Bottom - safeMargin;
+        void Offset(int dx, int dy) { left += dx; right += dx; top += dy; bottom += dy; }
+        if (right > maxRight) Offset(maxRight - right, 0);
+        if (left < minLeft) Offset(minLeft - left, 0);
+        if (bottom > maxBottom) Offset(0, maxBottom - bottom);
+        if (top < minTop) Offset(0, minTop - top);
+
+        uint background = equation ? 0xFF0C1117u : 0xFF081616u;  // RGB(12,17,23) / RGB(8,22,22)
+        uint glow = equation ? 0xFF3F121Eu : 0xFF003734u;        // RGB(63,18,30) / RGB(0,55,52)
+        uint border = equation ? 0xFFFF4A66u : 0xFF3AEECFu;      // RGB(255,74,102) / RGB(58,238,207)
+        uint shadow = equation ? 0xFF5A121Fu : 0xFF004E48u;      // RGB(90,18,31) / RGB(0,78,72)
+        uint text = equation ? 0xFFFFEEF1u : 0xFF74FFE2u;        // RGB(255,238,241) / RGB(116,255,226)
+        float w = right - left, h = bottom - top;
+        scene.FillRect(left, top, w, h, background);
+        scene.Rect(left, top, w, h, glow, Math.Max(3, fontHeight / 5));
+        scene.Rect(left, top, w, h, border, Math.Max(1, fontHeight / 14));
+
+        float cx = left + w / 2, cy = top + h / 2;
+        float shadowOffset = Math.Max(1, fontHeight / 12);
+        scene.Text(cx + shadowOffset, cy + shadowOffset, item.Text, shadow, fontHeight, outline: false);
+        scene.Text(cx, cy, item.Text, text, fontHeight, outline: false);
+    }
 
     // ───────── 像素工具 ─────────
 
@@ -499,10 +630,15 @@ public sealed class MatchHack(IHackHost host) : IHackGame
     {
         var frame = host.Capture();
         _detected = frame is null ? null : LocateGeometry(frame);
+        if (_detected is null) ClearOverlayState();
         return _detected is not null;
     }
 
-    public void ResetInGameCache() => _detected = null;
+    public void ResetInGameCache()
+    {
+        _detected = null;
+        ClearOverlayState();
+    }
 
     public bool RunSession(Func<bool> stopRequested, Action<string> status)
     {
@@ -529,18 +665,22 @@ public sealed class MatchHack(IHackHost host) : IHackGame
             awaitingRightSelection = false; awaitingTransition = false; stateReady = false;
             enterAttempts = 0; rightStableFrames = 0; previousRight = -1;
             stableFrames = 0; havePrevious = false;
+            ClearOverlayState();
         }
         void Cleanup()
         {
             host.CancelAll();
-            ResetInGameCache();
+            ResetInGameCache(); // 里面会收起叠加层（原版 cleanup 里的 ClearOverlay）
         }
         void Wait(long started) => WaitForFrame(stopRequested, started, 50);
 
+        _overlayShown = null; // 上一次会话结束后宿主已经清过叠加层
+        ClearOverlayState();
         SetStatus("match: locating");
         while (!stopRequested())
         {
             var started = Now;
+            SyncOverlay();
             var frame = host.Capture();
             if (frame is null)
             {
@@ -701,8 +841,9 @@ public sealed class MatchHack(IHackHost host) : IHackGame
                 {
                     SetStatus("match: no solution"); Cleanup(); return false;
                 }
-                var rows = solution;
-                Solved?.Invoke(string.Join(" + ", Enumerable.Range(0, 3).Select(i => $"{values[i]}x{multipliers[rows[i]]}")) + " = " + target);
+                Solved?.Invoke(EquationText(values, multipliers, solution, target));
+                PublishOverlay(frame, geometry!, values, multipliers, solution, target);
+                SyncOverlay();
                 SetStatus("match: connecting");
             }
             if (!stateReady)

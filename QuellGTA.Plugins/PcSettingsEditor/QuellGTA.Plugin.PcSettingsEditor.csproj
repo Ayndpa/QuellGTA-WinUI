@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>QuellGTA.Plugin.PcSettingsEditor</AssemblyName>
+    <RootNamespace>QuellGTA.Plugin.PcSettingsEditor</RootNamespace>
+    <Version>3.4.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- 原版资源「备注CSV」：项目 ID 和名称对照表（纯 ASCII，GBK 与 UTF-8 相同） -->
+    <EmbeddedResource Include="Resources\ProfileSettings.csv" LogicalName="ProfileSettings.csv" />
+  </ItemGroup>
+</Project>

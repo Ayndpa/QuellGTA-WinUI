@@ -15,6 +15,7 @@ public sealed class AutoHackService : IDisposable
     private readonly GameService _game;
     private readonly IHackGame[] _games;
     private readonly MatchHack _match;
+    private readonly HackOverlayWindow _overlay;
     private readonly object _gate = new();
     private Thread? _worker;
     private volatile bool _stop;
@@ -27,12 +28,17 @@ public sealed class AutoHackService : IDisposable
         _settings = settings;
         _log = log;
         _host = new HackHost(game);
+        _overlay = new HackOverlayWindow(() => OverlayEnabled);
+        _host.Overlay = _overlay;
         _game = game;
-        // 顺序与原版 DetectGame 一致（尚未移植的模块暂缺）
+        // 顺序与原版 DetectGame 一致
         var match = new MatchHack(_host);
         match.Solved += equation => _log.Write("自动骇入：" + equation, 1);
         _match = match;
-        _games = [new SliderHack(_host), new FlashingHack(_host), new FleecaHack(_host), new FindNumberHack(_host), match];
+        var sort = new SortFingerprintHack(_host);
+        sort.Logged += text => _log.Write("自动骇入：" + text);
+        _games = [new SliderHack(_host), new FlashingHack(_host), new ChooseFingerprintHack(_host), sort,
+            new FleecaHack(_host), new FindNumberHack(_host), match];
     }
 
     public IEnumerable<string> SupportedGames => _games.Select(g => g.Name);
@@ -47,6 +53,16 @@ public sealed class AutoHackService : IDisposable
     {
         get => Math.Clamp(_settings.GetInt("AutoHack", "tap_hold_ms", 20), 1, 250);
         set => _settings.SetInt("AutoHack", "tap_hold_ms", Math.Clamp(value, 1, 250));
+    }
+    /// <summary>识别叠加层：把认出来的标签、光标、标记画在游戏画面上（原版 overlay_cursor，默认开启）。</summary>
+    public bool OverlayEnabled
+    {
+        get => _settings.Get("AutoHack", "overlay_cursor", "1") == "1";
+        set
+        {
+            _settings.Set("AutoHack", "overlay_cursor", value ? "1" : "0");
+            if (!value) _overlay.Clear();
+        }
     }
     /// <summary>两次点按之间的间隔（毫秒），原版默认 20。</summary>
     public int TapGapMs
@@ -143,6 +159,7 @@ public sealed class AutoHackService : IDisposable
         finally
         {
             _host.CancelAll();
+            _overlay.Clear();
             foreach (var candidate in _games) candidate.ResetInGameCache();
             _host.ClearGameWindow();
             if (completed) _log.Write("自动骇入：「" + game!.Name + "」已完成。", 1);
@@ -161,6 +178,7 @@ public sealed class AutoHackService : IDisposable
         Thread? worker;
         lock (_gate) worker = _worker;
         worker?.Join(3000);
+        _overlay.Dispose();
         _host.Dispose();
     }
 }

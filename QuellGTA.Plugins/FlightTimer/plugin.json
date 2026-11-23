@@ -1,0 +1,10 @@
+{
+  "id": "flight-timer",
+  "name": "飞行变强计时",
+  "description": "飞行学校练习时免手动计时：按起飞键开始，按停止键结束，再按一次归零。原版「飞行变强计时工具 V1.1」。",
+  "version": "1.1.0",
+  "author": "MageAngela",
+  "glyph": "",
+  "assembly": "QuellGTA.Plugin.FlightTimer.dll",
+  "api": 1
+}

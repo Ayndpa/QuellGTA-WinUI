@@ -46,8 +46,20 @@ public sealed class Settings
         }
     }
 
+    private bool _frozen;
+
+    /// <summary>
+    /// 不再把改动写回文件。配置文件被整个换掉（读取存档、切换双版本存档）之后、重启之前调用，
+    /// 免得退出时保存统计数据之类的写入把刚换上的文件又覆盖回去。
+    /// </summary>
+    public void Freeze()
+    {
+        lock (_gate) _frozen = true;
+    }
+
     private void Save()
     {
+        if (_frozen) return;
         var sb = new StringBuilder();
         foreach (var (name, section) in _data)
         {

@@ -1,0 +1,10 @@
+{
+  "id": "weapon-wheel",
+  "name": "武器选单优化器",
+  "description": "游戏要求武器轮盘键按住至少约 250 毫秒才会打开。按一下触发键，就替你把游戏里的武器轮盘键按住到安全时长再松开。原版「武器选单优化器 V1.1」。",
+  "version": "1.1.0",
+  "author": "MageAngela",
+  "glyph": "",
+  "assembly": "QuellGTA.Plugin.WeaponWheel.dll",
+  "api": 1
+}

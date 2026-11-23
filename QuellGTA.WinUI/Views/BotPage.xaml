@@ -46,8 +46,7 @@
                         <Button Content="设置…" Tag="乙" Click="EditSlot_Click" />
                     </StackPanel>
                 </local:SettingRow>
-                <TextBlock Text="可以在「热键」页给战局甲 / 乙各设一个热键，在游戏里一键加入。" Margin="2,2,0,0"
-                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <StackPanel x:Name="SlotShortcuts" Spacing="4" Margin="0,4,0,0" />
 
                 <!-- 差事候车 -->
                 <TextBlock Text="差事候车" Style="{StaticResource SectionHeaderStyle}" />

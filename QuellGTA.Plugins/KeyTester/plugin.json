@@ -1,0 +1,10 @@
+{
+  "id": "key-tester",
+  "name": "按键间隔测试",
+  "description": "记录收到的每个按键和距离上一个按键的毫秒数，用来检查宏、自动骇入等模拟按键的节奏。原版测试工具「fptest」。",
+  "version": "1.0.0",
+  "author": "MageAngela",
+  "glyph": "",
+  "assembly": "QuellGTA.Plugin.KeyTester.dll",
+  "api": 1
+}

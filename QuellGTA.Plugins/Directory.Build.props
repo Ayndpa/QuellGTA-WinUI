@@ -1,0 +1,30 @@
+<Project>
+  <!--
+    所有随程序发布的插件共用的设置。插件是普通的 .NET 8 类库：
+    - 引用插件接口，但不把它（以及 WinUI 等主程序已有的程序集）复制到输出目录，运行时用主程序那一份；
+    - 输出目录里放 plugin.json，主程序构建时把每个插件的输出复制到 Plugins\<程序集名>\。
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <Authors>MageAngela</Authors>
+    <Copyright>GPL-3.0</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.260114001" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4948" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)..\QuellGTA.Plugins.Abstractions\QuellGTA.Plugins.Abstractions.csproj"
+                      Private="false" ExcludeAssets="runtime" />
+    <None Include="plugin.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

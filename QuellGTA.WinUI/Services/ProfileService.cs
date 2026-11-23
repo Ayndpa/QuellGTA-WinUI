@@ -65,6 +65,8 @@ public sealed class ProfileService(Settings settings, GameService game, GameFile
         try
         {
             File.Copy(SlotFile(slot), settings.FilePath, overwrite: true);
+            new Settings(settings.FilePath).SetBool("本地", "双版本存档", false); // 原版：读取其他存档后自动关闭双版本存档
+            settings.Freeze();
             return new FileResult(true, $"已读取存档 {slot}，重启后生效。");
         }
         catch (Exception ex) { return new FileResult(false, "读取失败：" + ex.Message); }
@@ -87,9 +89,56 @@ public sealed class ProfileService(Settings settings, GameService game, GameFile
         try
         {
             if (File.Exists(settings.FilePath)) File.Delete(settings.FilePath);
+            settings.Freeze();
             return new FileResult(true, "已恢复默认设置，重启后生效。");
         }
         catch (Exception ex) { return new FileResult(false, "操作失败：" + ex.Message); }
+    }
+
+    // ───────── 双版本存档 ─────────
+
+    /// <summary>
+    /// 自动切换双版本存档：传承版和增强版各用一份配置。切换游戏版本（手动或自动检测）时，
+    /// 先把当前配置存成原来那个版本的存档，再换上目标版本的存档并重启。目标版本还没有存档时不重启，
+    /// 当前设置就成了目标版本的配置。使用自定义进程时不可用。
+    /// </summary>
+    public bool DualProfile
+    {
+        get => settings.GetBool("本地", "双版本存档", false);
+        set => settings.SetBool("本地", "双版本存档", value);
+    }
+
+    private string EditionFile(GameEdition edition) =>
+        Path.Combine(SlotDir, edition == GameEdition.Legacy ? "Profile_Legacy.ini" : "Profile_Enhanced.ini");
+
+    /// <summary>
+    /// 切换双版本存档(版本)：from 是切换前的版本，to 是切换后的版本（此时配置里的游戏版本已经是 to）。
+    /// 返回 true 表示已经换上了目标版本的配置，调用方应当重启程序。
+    /// </summary>
+    public bool SwitchEditionProfile(GameEdition from, GameEdition to, Action saveStatistics)
+    {
+        if (!DualProfile || from == to || from == GameEdition.Custom || to == GameEdition.Custom) return false;
+        try
+        {
+            Directory.CreateDirectory(SlotDir);
+            saveStatistics();
+            // 保存当前：当前的配置属于切换前的版本
+            var current = EditionFile(from);
+            File.Copy(settings.FilePath, current, overwrite: true);
+            new Settings(current).SetInt("本地", "游戏版本", (int)from);
+            // 读取目标
+            var target = EditionFile(to);
+            if (!File.Exists(target)) return false;
+            File.Copy(target, settings.FilePath, overwrite: true);
+            settings.Freeze();
+            log.Write($"已切换到{(to == GameEdition.Legacy ? "传承版" : "增强版")}的配置存档，程序即将重启。", 1);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            log.Write("切换双版本存档失败：" + ex.Message, 3);
+            return false;
+        }
     }
 
     public string SlotDirectory
@@ -150,6 +199,8 @@ public sealed class ProfileService(Settings settings, GameService game, GameFile
             var text = Encoding.UTF8.GetString(content);
             if (!text.Contains('[')) return new FileResult(false, "配置代码的内容不是配置文件。");
             File.WriteAllBytes(settings.FilePath, content);
+            new Settings(settings.FilePath).SetBool("本地", "双版本存档", false);
+            settings.Freeze();
             return new FileResult(true, "已导入配置，重启后生效。");
         }
         catch (Exception ex) { return new FileResult(false, "导入失败：" + ex.Message); }

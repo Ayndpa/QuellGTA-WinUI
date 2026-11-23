@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="QuellGTA.Views.ActivityPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:svc="using:QuellGTA.Services">
+
+    <Grid Padding="28,20,28,20" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <StackPanel Spacing="4">
+                <TextBlock Text="活动" Style="{StaticResource PageTitleStyle}" />
+                <TextBlock Text="本次运行期间的所有操作和提示。开启「每天自动存日志」后会同时写到数据目录的 Logs 文件夹。"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+            </StackPanel>
+            <CommandBar HorizontalAlignment="Right" VerticalAlignment="Bottom" DefaultLabelPosition="Right" Background="Transparent">
+                <AppBarButton Icon="Save" Label="保存并打开" Click="SaveLog_Click" />
+                <AppBarButton Icon="Delete" Label="清空" Click="ClearLog_Click" />
+            </CommandBar>
+        </Grid>
+
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="4">
+            <Grid>
+                <ListView x:Name="LogList" SelectionMode="None" IsItemClickEnabled="False">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource DefaultListViewItemStyle}">
+                            <Setter Property="MinHeight" Value="30" />
+                            <Setter Property="Padding" Value="12,2" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="svc:LogEntry">
+                            <Grid ColumnSpacing="10" Opacity="{x:Bind Emphasis}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Time}" FontFamily="Consolas" VerticalAlignment="Center"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                <FontIcon Grid.Column="1" Glyph="{x:Bind Glyph}" FontSize="12" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind Text}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                           IsTextSelectionEnabled="True" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <TextBlock x:Name="EmptyText" Text="还没有记录。" Opacity="0.6" Margin="16" />
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

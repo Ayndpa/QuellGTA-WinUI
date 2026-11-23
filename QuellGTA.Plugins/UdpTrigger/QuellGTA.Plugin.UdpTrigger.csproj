@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>QuellGTA.Plugin.UdpTrigger</AssemblyName>
+    <RootNamespace>QuellGTA.Plugin.UdpTrigger</RootNamespace>
+    <Version>1.0.0</Version>
+    <TriggerProject>$(MSBuildThisFileDirectory)..\..\QuellGTA.UdpTrigger\QuellGTA.UdpTrigger.csproj</TriggerProject>
+    <TriggerExe>$(MSBuildThisFileDirectory)..\..\QuellGTA.UdpTrigger\bin\aot\QuellUdpTrigger.exe</TriggerExe>
+  </PropertyGroup>
+
+  <!--
+    触发程序用 Native AOT 发布成一个不依赖 .NET 运行时的小 exe，放进插件目录。
+    Native AOT 需要 Visual Studio 的 C++ 生成工具；链接器通过 vswhere 查找，所以把 Installer 目录加进 PATH。
+    没有 C++ 工具时跳过，插件页面会提示触发程序缺失。
+  -->
+  <Target Name="PublishTriggerExe" BeforeTargets="PrepareForBuild"
+          Inputs="$(TriggerProject);$(MSBuildThisFileDirectory)..\..\QuellGTA.UdpTrigger\Program.cs" Outputs="$(TriggerExe)">
+    <Exec Command="set &quot;PATH=%PATH%;$(MSBuildProgramFiles32)\Microsoft Visual Studio\Installer&quot; &amp;&amp; dotnet publish &quot;$(TriggerProject)&quot; -c Release -nologo -v q -o &quot;$(MSBuildThisFileDirectory)..\..\QuellGTA.UdpTrigger\bin\aot&quot;"
+          ContinueOnError="true" StandardOutputImportance="low">
+      <Output TaskParameter="ExitCode" PropertyName="_TriggerExit" />
+    </Exec>
+    <Message Importance="high" Text="UDP 触发程序没有生成（需要 Visual Studio C++ 生成工具），插件里将缺少触发程序。" Condition="'$(_TriggerExit)' != '' and '$(_TriggerExit)' != '0'" />
+  </Target>
+
+  <!-- 在 publish 之后才加入复制列表（求值阶段 exe 可能还不存在） -->
+  <Target Name="IncludeTriggerExe" AfterTargets="PublishTriggerExe" BeforeTargets="AssignTargetPaths">
+    <ItemGroup>
+      <None Include="$(TriggerExe)" Link="QuellUdpTrigger.exe" CopyToOutputDirectory="PreserveNewest" Condition="Exists('$(TriggerExe)')" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -18,10 +18,14 @@ public sealed partial class QuellCore
     public WaitService Waiting { get; private set; } = null!;
     public ProfileService Profiles { get; private set; } = null!;
     public UpdateService Updates { get; private set; } = null!;
+    public SelfUpdateService SelfUpdate { get; private set; } = null!;
     public AutoHackService AutoHack { get; private set; } = null!;
 
     /// <summary>「游戏退出时关闭」触发：请求主窗口退出程序。</summary>
     public event Action? ExitRequested;
+    /// <summary>检测到游戏启动 / 退出（后台线程）。</summary>
+    public event Action? GameStarted, GameExited;
+    public PluginManager Plugins { get; private set; } = null!;
 
     private void InitializeExtras()
     {
@@ -29,11 +33,14 @@ public sealed partial class QuellCore
         Waiting = new WaitService(Settings, this);
         Profiles = new ProfileService(Settings, Game, Files, Log);
         Updates = new UpdateService(Settings, Log, Sound);
+        SelfUpdate = new SelfUpdateService(Settings, Log);
+        Plugins = new PluginManager(Settings, Log);
+        Task.Run(async () => { await Task.Delay(5000); SelfUpdate.CleanUp(); });
         ApplyLogOptions();
         _usageSeconds = Settings.GetInt("统计", "使用时长", 0);
         _gameSeconds = Settings.GetInt("统计", "游戏时长", 0);
         Hotkeys.IgnoreMods = IgnoredModifiers;
-        Hotkeys.UsePolling = HotkeyPolling;
+        Hotkeys.Engine = HotkeyEngine;
         _englishThread = new Thread(EnglishLockLoop) { IsBackground = true, Name = "QuellGTA.EnglishLock" };
         _englishThread.Start();
         if (UdpEnabled) StartUdp();
@@ -45,6 +52,7 @@ public sealed partial class QuellCore
     private void DisposeExtras()
     {
         _extrasStopping = true;
+        Plugins.Dispose(); // 先停插件，它们可能还在用下面这些服务
         SaveStatistics();
         StopUdp();
         Waiting.Stop(silent: true);
@@ -142,6 +150,7 @@ public sealed partial class QuellCore
         {
             AntiAfkTick();
             if (CloudSaveTracking) TrackCloudSave();
+            if (_tickCount % 2 == 0) MissionTick();
         }
         else
         {
@@ -156,6 +165,15 @@ public sealed partial class QuellCore
     private int _usageSeconds, _gameSeconds;
     public TimeSpan UsageTime => TimeSpan.FromSeconds(_usageSeconds);
     public TimeSpan GameTime => TimeSpan.FromSeconds(_gameSeconds);
+
+    /// <summary>需要重启程序时触发（例如换上了另一个游戏版本的配置存档）。</summary>
+    public event Action? RestartRequested;
+
+    /// <summary>游戏版本切换之后调用：开了双版本存档时换上目标版本的配置并重启。</summary>
+    public void OnEditionChanged(GameEdition before)
+    {
+        if (Profiles.SwitchEditionProfile(before, Game.Edition, SaveStatistics)) RestartRequested?.Invoke();
+    }
 
     private void SaveStatistics()
     {
@@ -473,6 +491,7 @@ public sealed partial class QuellCore
         foreach (var tool in Tools)
             if (GetToolAutoRun(tool) && FindToolWindow(tool) == 0) RunTool(tool, quiet: true);
         _gameWindowHidden = false;
+        try { GameStarted?.Invoke(); } catch (Exception ex) { Log.Write("插件处理游戏启动事件出错：" + ex.Message, 2); }
     }
 
     /// <summary>游戏退出事件</summary>
@@ -481,6 +500,7 @@ public sealed partial class QuellCore
         Thread.Sleep(500); // 等游戏的附属进程退出
         SaveStatistics();
         if (KillLauncherOnGameExit) KillLauncher(LauncherDelayMs);
+        try { GameExited?.Invoke(); } catch (Exception ex) { Log.Write("插件处理游戏退出事件出错：" + ex.Message, 2); }
         if (ExitWithGame) ExitRequested?.Invoke();
     }
 
@@ -534,14 +554,18 @@ public sealed partial class QuellCore
             Hotkeys.IgnoreMods = value;
         }
     }
-    /// <summary>轮询模式：不用钩子，改为定时查询按键状态。钩子被其他软件干扰时使用，不支持鼠标滚轮。</summary>
-    public bool HotkeyPolling
+    /// <summary>
+    /// 热键引擎：钩子（原版「代理」）、轮询、原始输入。原版用「轮询热键」「原始热键」两个开关保存，这里沿用。
+    /// </summary>
+    public HotkeyEngine HotkeyEngine
     {
-        get => Settings.GetBool("本地", "轮询热键", false);
+        get => Settings.GetBool("本地", "原始热键", false) ? HotkeyEngine.RawInput
+            : Settings.GetBool("本地", "轮询热键", false) ? HotkeyEngine.Polling : HotkeyEngine.Hook;
         set
         {
-            Settings.SetBool("本地", "轮询热键", value);
-            Hotkeys.UsePolling = value;
+            Settings.SetBool("本地", "原始热键", value == HotkeyEngine.RawInput);
+            Settings.SetBool("本地", "轮询热键", value == HotkeyEngine.Polling);
+            Hotkeys.Engine = value;
             Hotkeys.Restart();
         }
     }
@@ -559,7 +583,7 @@ public sealed partial class QuellCore
     /// </summary>
     private void HotkeySelfCheck()
     {
-        if (!HotkeySelfCheckEnabled || Hotkeys.UsePolling || !Hotkeys.IsRunning) return;
+        if (!HotkeySelfCheckEnabled || Hotkeys.Engine == HotkeyEngine.Polling || !Hotkeys.IsRunning) return;
         var recentInput = InputSim.IdleMilliseconds() < 3000;
         var hookQuiet = Environment.TickCount64 - Hotkeys.LastEventTick > 15000;
         _hookSilentChecks = recentInput && hookQuiet ? _hookSilentChecks + 1 : 0;
@@ -573,7 +597,7 @@ public sealed partial class QuellCore
 
     /// <summary>
     /// UDP 指令：让其他程序通过 UDP 数据报触发操作（原版的「UDP 触发程序」插件就是这么用的）。
-    /// 指令：kill fwon fwoff single bancard paste timerst timerzero timerstart timerstop joinbot1 joinbot2。
+    /// 指令：kill fwon fwoff single bancard paste timerst timerzero timerstart timerstop joinbot1 joinbot2 winmini。
     /// 与原版不同：只监听本机回环地址，局域网里的其他设备发不进来。
     /// </summary>
     public bool UdpEnabled
@@ -608,7 +632,8 @@ public sealed partial class QuellCore
                     UdpReceiveResult result;
                     try { result = await client.ReceiveAsync(); }
                     catch (Exception) { return; }
-                    var command = Encoding.ASCII.GetString(result.Buffer).Trim();
+                    // 触发程序发的是自己的文件名，Windows 的文件名不分大小写（Kill.exe 也算 kill）
+                    var command = Encoding.ASCII.GetString(result.Buffer).Trim().ToLowerInvariant();
                     _ = Task.Run(() => RunCommand(command));
                 }
             });
@@ -644,10 +669,28 @@ public sealed partial class QuellCore
             case "timerstop": Overlay.StopTimer(); Notify(); break;
             case "joinbot1": _ = Bots.JoinSlotAsync("甲"); break;
             case "joinbot2": _ = Bots.JoinSlotAsync("乙"); break;
+            case "winmini": MinimizeGame(); break;
             default: return false;
         }
         return true;
     }
+
+    /// <summary>
+    /// 切出游戏（winmini 指令）：把游戏窗口最小化，焦点交给任务栏。出自原版较早的版本（_切出按钮_被单击 的模式 3），
+    /// Build 0216 的界面上已经没有这个按钮，但 UDP 触发程序仍然带着这条指令。
+    /// </summary>
+    public void MinimizeGame()
+    {
+        var hwnd = Game.GetWindowHandle();
+        if (hwnd == 0) { Log.Write(Lang.C(157)); return; }
+        Native.NativeMethods.ShowWindow(hwnd, 6 /* SW_MINIMIZE */);
+        var taskbar = FindWindowW("Shell_TrayWnd", null);
+        if (taskbar != 0) Native.NativeMethods.SetForegroundWindow(taskbar);
+        Log.Write("已切出游戏。", 1);
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+    private static extern nint FindWindowW(string? className, string? title);
 
     // ───────── 第三方工具入口 ─────────
 

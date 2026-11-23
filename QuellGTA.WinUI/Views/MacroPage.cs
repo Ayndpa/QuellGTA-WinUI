@@ -1,3 +1,4 @@
+using CommunityToolkit.WinUI.Controls;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -6,96 +7,95 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace QuellGTA.Views;
 
-public sealed partial class MacroPage : Page
+/// <summary>宏：自编宏库、连击左键、聊天输入辅助。</summary>
+public sealed partial class MacroPage : FeaturePage
 {
     private static QuellCore Core => App.Core;
-    private readonly bool _ready;
-    private readonly Action _stateHandler;
+    private readonly StackPanel _macroPanel = new() { Spacing = 4 };
+    private readonly InfoBar _empty = Ui.Info("还没有宏", "可以从预设添加一个，或者新建后自己编写按键序列。");
 
-    public MacroPage()
+    public MacroPage() : base("宏", "把一串按键录成宏，用快捷键在游戏里一键执行。所有模拟按键只在游戏位于前台时执行，游戏切到后台会自动停止。")
     {
-        InitializeComponent();
-        BuildExtras();
-
+        // ───────── 自编宏 ─────────
+        var presets = new MenuFlyout { Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.Bottom };
         foreach (var (name, file) in MacroService.Presets)
         {
-            var item = new MenuFlyoutItem { Text = name, Tag = file };
-            item.Click += Preset_Click;
-            PresetMenu.Items.Add(item);
+            var item = new MenuFlyoutItem { Text = name };
+            item.Click += async (_, _) => await EditAsync(new MacroDefinition { Name = name, Script = MacroService.ReadPreset(file) }, isNew: true);
+            presets.Items.Add(item);
         }
-
-        CpsBox.Value = Core.ClicksPerSecond;
-        ClickModeCombo.SelectedIndex = Core.ClickWhileHeld ? 1 : 0;
-        AfkCombo.SelectedIndex = (int)Core.AfkMode;
+        var newButton = new Button { Content = "新建宏", Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+        newButton.Click += async (_, _) => await EditAsync(new MacroDefinition(), isNew: true);
+        var commands = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+        commands.Children.Add(new DropDownButton { Content = "从预设添加", Flyout = presets });
+        commands.Children.Add(newButton);
+        Section("自编宏");
+        Add(Ui.Row("宏库", "每个宏有自己的快捷键和执行次数。脚本格式与原版互相兼容，可以用剪贴板导入导出。", commands, "\uE765"));
+        Add(_empty, _macroPanel);
         RefreshMacros();
-        RefreshState();
-        _ready = true;
 
-        _stateHandler = () => DispatcherQueue.TryEnqueue(RefreshState);
-        Core.StateChanged += _stateHandler;
-        Unloaded += (_, _) =>
-        {
-            Core.StateChanged -= _stateHandler;
-            Core.Hotkeys.CancelCapture();
-        };
+        // ───────── 连击 ─────────
+        Section("连击左键");
+        Add(Ui.Shortcut(this, "连击左键"));
+        Add(Ui.Number("点击频率（次 / 秒）", "", 1, 50, () => Core.ClicksPerSecond, v => Core.ClicksPerSecond = (int)v, glyph: "\uE962"));
+        Add(Ui.Choice("触发方式", "", ["按下时切换开关", "按住按键时连击"], () => Core.ClickWhileHeld ? 1 : 0, i => Core.ClickWhileHeld = i == 1, glyph: "\uE7C9"));
+
+        // ───────── 聊天输入 ─────────
+        Section("聊天输入");
+        Add(Ui.Expander("粘贴文字", "游戏聊天框不支持 Ctrl+V。开启后用快捷键把剪贴板内容打进去（最多 256 个字符）。增强版只能打出键盘上有的字符，传承版可以输入中文。", "\uE77F",
+            Ui.Switch(() => Core.PasteEnabled, v => Core.PasteEnabled = v),
+            Ui.Shortcut(this, "粘贴键")));
+        var rates = new[] { 1, 2, 5, 10, 20 };
+        Add(Ui.Expander("英语输入锁定", "定时让游戏切回英文输入法，避免中文输入法吃掉游戏按键。要打中文时按「解除英语锁定」，锁定会暂停到你按回车或 Esc。", "\uE8D3",
+            Ui.Switch(() => Core.EnglishLock, v => Core.EnglishLock = v),
+            Ui.Choice("锁定频率", "每秒切换几次。越高越不容易被输入法抢回去。", ["每秒 1 次", "每秒 2 次", "每秒 5 次", "每秒 10 次", "每秒 20 次"],
+                () => Array.IndexOf(rates, Core.EnglishLockRate), i => Core.EnglishLockRate = rates[i], 160),
+            Ui.Shortcut(this, "英语解键")));
+
+        OnCoreState(RefreshState);
+        Unloaded += (_, _) => Core.Hotkeys.CancelCapture();
     }
 
     // ───────── 宏库 ─────────
 
     private void RefreshMacros()
     {
-        MacroPanel.Children.Clear();
+        _macroPanel.Children.Clear();
         foreach (var macro in Core.Macros.Macros)
         {
             var run = new Button { Tag = macro.Id, MinWidth = 76 };
             run.Click += (_, _) => Task.Run(() => Core.ToggleMacro(macro.Id, bringToFront: true));
-            var edit = new Button { Content = "编辑" };
+            var edit = new Button { Content = new FontIcon { Glyph = "\uE70F", FontSize = 14 } };
+            ToolTipService.SetToolTip(edit, "编辑");
             edit.Click += async (_, _) => await EditAsync(macro, isNew: false);
             var enabled = new ToggleSwitch { IsOn = macro.Enabled, OnContent = "", OffContent = "", MinWidth = 0 };
+            ToolTipService.SetToolTip(enabled, "启用快捷键");
             enabled.Toggled += (_, _) =>
             {
                 macro.Enabled = enabled.IsOn;
                 Core.Macros.Save();
                 Core.RegisterMacroHotkeys();
             };
-
             var actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
+            var hotkey = Hotkey.Parse(macro.Hotkey);
+            actions.Children.Add(Ui.KeyChips(hotkey));
             actions.Children.Add(run);
             actions.Children.Add(edit);
             actions.Children.Add(enabled);
-
             var steps = MacroService.Parse(macro.Script);
-            var hotkey = Hotkey.Parse(macro.Hotkey);
-            MacroPanel.Children.Add(new SettingRow
-            {
-                Title = macro.Name,
-                Description = $"{steps.Count(s => s.Op != "Delay")} 个操作 · 执行 {macro.Repeat} 次 · 热键：{hotkey}",
-                Action = actions,
-                Tag = macro.Id,
-            });
+            var card = Ui.Row(macro.Name, $"{steps.Count(s => s.Op != "Delay")} 个操作 · 执行 {macro.Repeat} 次", actions, "\uE768");
+            card.Tag = macro.Id;
+            _macroPanel.Children.Add(card);
         }
-        EmptyText.Visibility = Core.Macros.Macros.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        _empty.IsOpen = Core.Macros.Macros.Count == 0;
         RefreshState();
     }
 
     private void RefreshState()
     {
-        foreach (var row in MacroPanel.Children.OfType<SettingRow>())
-        {
-            if (row.Action is StackPanel { Children: [Button run, ..] } && row.Tag is string id)
+        foreach (var card in _macroPanel.Children.OfType<SettingsCard>())
+            if (card.Content is StackPanel { Children: [_, Button run, ..] } && card.Tag is string id)
                 run.Content = Core.Macros.IsRunning(id) ? "停止" : "试运行";
-        }
-        AfkButton.Content = Core.AfkActive ? "停止挂机" : "开始挂机";
-        AfkRow.Title = Core.AfkActive ? "正在前台挂机…" : "开始挂机";
-    }
-
-    private async void New_Click(object sender, RoutedEventArgs e) =>
-        await EditAsync(new MacroDefinition(), isNew: true);
-
-    private async void Preset_Click(object sender, RoutedEventArgs e)
-    {
-        var item = (MenuFlyoutItem)sender;
-        await EditAsync(new MacroDefinition { Name = item.Text, Script = MacroService.ReadPreset((string)item.Tag) }, isNew: true);
     }
 
     /// <summary>宏编辑对话框：左边写脚本，右边实时显示每一步的中文说明。</summary>
@@ -275,23 +275,4 @@ public sealed partial class MacroPage : Page
         Core.RegisterMacroHotkeys();
         RefreshMacros();
     }
-
-    // ───────── 连击 / 挂机 ─────────
-
-    private void Cps_Changed(NumberBox sender, NumberBoxValueChangedEventArgs args)
-    {
-        if (_ready && !double.IsNaN(sender.Value)) Core.ClicksPerSecond = (int)sender.Value;
-    }
-
-    private void ClickMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_ready) Core.ClickWhileHeld = ClickModeCombo.SelectedIndex == 1;
-    }
-
-    private void Afk_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_ready && AfkCombo.SelectedIndex >= 0) Core.AfkMode = (AfkMode)AfkCombo.SelectedIndex;
-    }
-
-    private void Afk_Click(object sender, RoutedEventArgs e) => Task.Run(Core.ToggleAfk);
 }

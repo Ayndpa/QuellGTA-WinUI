@@ -12,6 +12,7 @@ public sealed partial class RepairPage : Page
     public RepairPage()
     {
         InitializeComponent();
+        Loaded += (_, _) => OnShown();
         BuildExtras();
         OnlyLatestCheck.IsChecked = Files.OnlyLatestProfile;
         LegacyCheck.IsChecked = Files.LegacyClean;
@@ -20,7 +21,8 @@ public sealed partial class RepairPage : Page
         ShaderOnExitCheck.IsChecked = Files.ClearShaderOnExit;
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e) => RefreshProfiles();
+    /// <summary>页面每次显示时刷新（页面由主窗口直接创建，不经过 Frame 导航）。</summary>
+    private void OnShown() => RefreshProfiles();
 
     private void RefreshProfiles()
     {

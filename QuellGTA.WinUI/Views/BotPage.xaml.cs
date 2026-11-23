@@ -16,6 +16,9 @@ public sealed partial class BotPage : Page
     public BotPage()
     {
         InitializeComponent();
+        Loaded += (_, _) => OnShown();
+        SlotShortcuts.Children.Add(Ui.Shortcut(this, "战局甲键"));
+        SlotShortcuts.Children.Add(Ui.Shortcut(this, "战局乙键"));
         WaitAutoJoin.IsChecked = Waiting.AutoJoin;
         WaitAutoSolo.IsChecked = Waiting.AutoSolo;
         _waitHandler = () => DispatcherQueue.TryEnqueue(RefreshWaiting);
@@ -73,7 +76,8 @@ public sealed partial class BotPage : Page
         WaitUrlBox.Items.Clear();
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    /// <summary>页面每次显示时刷新（页面由主窗口直接创建，不经过 Frame 导航）。</summary>
+    private void OnShown()
     {
         RefreshSlots();
         ShowBots(Bots.Bots);
@@ -149,7 +153,7 @@ public sealed partial class BotPage : Page
         var current = Bots.GetSlot(slot);
         var isBot = current.StartsWith("BOT", StringComparison.Ordinal) && int.TryParse(current[3..], out _);
 
-        var kind = new RadioButtons { Header = "按下「加入」或热键时" };
+        var kind = new RadioButtons { Header = "按下「加入」或快捷键时" };
         kind.Items.Add("加入在线 Bot");
         kind.Items.Add("加入最近一次加入的战局");
         kind.Items.Add("加入自定义的战局（SteamJVP、Steam 好友，或一个网页地址）");

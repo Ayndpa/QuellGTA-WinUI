@@ -1,0 +1,10 @@
+{
+  "id": "pc-settings-editor",
+  "name": "PC 设置编辑器",
+  "description": "编辑线上设置文件 pc_settings.bin：常用设置、角色任务状态、任意项目，以及名钻隧道防掉线和云存档监控。原版「GTAOL PC设置编辑器 V3.4」。",
+  "version": "3.4.0",
+  "author": "MageAngela",
+  "glyph": "",
+  "assembly": "QuellGTA.Plugin.PcSettingsEditor.dll",
+  "api": 1
+}

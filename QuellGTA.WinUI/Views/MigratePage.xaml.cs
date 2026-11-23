@@ -27,10 +27,12 @@ public sealed partial class MigratePage : Page
     public MigratePage()
     {
         InitializeComponent();
+        Loaded += (_, _) => OnShown();
         Build();
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e) => Refresh();
+    /// <summary>页面每次显示时刷新（页面由主窗口直接创建，不经过 Frame 导航）。</summary>
+    private void OnShown() => Refresh();
 
     private void Refresh()
     {

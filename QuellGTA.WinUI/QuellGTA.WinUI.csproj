@@ -37,7 +37,38 @@
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
     <!-- 虚拟手柄（后台挂机 / 手柄偷速），需要用户另外安装 ViGEmBus 驱动 -->
     <PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.256" />
+    <!-- 设置卡（SettingsCard / SettingsExpander），Windows 设置和 PowerToys 用的同一套控件，MIT 许可 -->
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.251219" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- 插件接口：主程序和插件共用这一份 -->
+    <ProjectReference Include="..\QuellGTA.Plugins.Abstractions\QuellGTA.Plugins.Abstractions.csproj" />
+    <!-- 随程序发布的插件：只保证先编译（不引用它们的程序集），编译完复制到输出目录的 Plugins\<程序集名>\ -->
+    <PluginProject Include="..\QuellGTA.Plugins\*\*.csproj" />
+    <ProjectReference Include="@(PluginProject)" ReferenceOutputAssembly="false" Private="false" SkipGetTargetFrameworkProperties="true" />
+  </ItemGroup>
+
+  <Target Name="CopyBundledPlugins" AfterTargets="Build">
+    <MSBuild Projects="@(PluginProject)" Targets="GetTargetPath" Properties="Configuration=$(Configuration);Platform=$(Platform)">
+      <Output TaskParameter="TargetOutputs" ItemName="_PluginAssembly" />
+    </MSBuild>
+    <ItemGroup>
+      <!-- 插件输出目录里的全部文件（插件接口、WinUI 这些主程序已有的程序集不会被复制到那里） -->
+      <_PluginFile Include="%(_PluginAssembly.RootDir)%(_PluginAssembly.Directory)**\*" Exclude="%(_PluginAssembly.RootDir)%(_PluginAssembly.Directory)**\*.deps.json"
+                   PluginName="%(_PluginAssembly.Filename)" PluginDir="%(_PluginAssembly.RootDir)%(_PluginAssembly.Directory)" />
+      <!-- 主程序目录里已有的文件（WinUI 带进来的 WebView2 等）运行时用主程序那一份，不重复复制 -->
+      <_PluginFile Remove="@(_PluginFile)" Condition="'%(RecursiveDir)' == '' and Exists('$(OutDir)%(Filename)%(Extension)')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PluginFile)" DestinationFiles="@(_PluginFile->'$(OutDir)Plugins\%(PluginName)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="PublishBundledPlugins" AfterTargets="Publish">
+    <ItemGroup>
+      <_PublishPluginFile Include="$(OutDir)Plugins\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PublishPluginFile)" DestinationFiles="@(_PublishPluginFile->'$(PublishDir)Plugins\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
 
   <ItemGroup>
     <!-- GPL-3.0 要求分发时附带许可证全文：随程序一起输出 -->

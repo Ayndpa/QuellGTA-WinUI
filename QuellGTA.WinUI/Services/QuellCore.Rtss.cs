@@ -170,9 +170,25 @@ public sealed partial class QuellCore
     {
         if (!RtssLimiter) { Log.Write(Lang.C(457)); return; }
         if (Now - Interlocked.Exchange(ref _lastFrameLimit, Now) < 200) return;
+        if (RtssManualInput)
+        {
+            // 「手动输入帧数」模式：快捷键不切预设，而是弹窗让你输入
+            FrameLimitInputRequested?.Invoke();
+            return;
+        }
         if (RtssCurrentLimit < 0) RtssCurrentLimit = Rtss.GetFramerateLimit(RtssProfile) ?? -1;
         if (NextPreset(RtssPresets, RtssCurrentLimit) is { } next) ApplyFrameLimit(next);
     }
+
+    /// <summary>锁帧快捷键的方式：false 循环预设，true 每次弹窗手动输入帧数（原版「锁帧仅输入」）。</summary>
+    public bool RtssManualInput
+    {
+        get => Settings.GetBool("扩展", "锁帧仅输入", false);
+        set => Settings.SetBool("扩展", "锁帧仅输入", value);
+    }
+
+    /// <summary>手动输入模式下按了锁帧键：界面应弹出输入框，然后调用 ApplyFrameLimit。</summary>
+    public event Action? FrameLimitInputRequested;
 
     /// <summary>循环预设的选择逻辑，单独拿出来方便测试。没有可用的档位时返回 null。</summary>
     public static int? NextPreset(int[] presets, int current)
@@ -193,7 +209,7 @@ public sealed partial class QuellCore
     private static string SanitizeOsd(string text) =>
         new(text.Where(c => c is >= ' ' and <= '~' and not '<' and not '>').ToArray());
 
-    /// <summary>拼出要显示在 OSD 上的内容，格式参照原版「RTSS_刷新显示_线程」的竖排样式。两项都没开时返回空串。</summary>
+    /// <summary>拼出要显示在 OSD 上的内容，格式参照原版「RTSS_刷新显示_线程」的竖排 / 横排样式。两项都没开时返回空串。</summary>
     public string BuildOsdText()
     {
         var text = "";
@@ -208,9 +224,12 @@ public sealed partial class QuellCore
             var dot = time.LastIndexOf('.');
             var size = Overlay.TimerFontSize * 8;
             var signature = SanitizeOsd(Overlay.TimerSignature);
-            text += $"<P={RtssTimerX},{RtssTimerY}><C0={Overlay.TimerColor}><C1=FFFFFF><S0={size}><S1=-{size / 2}>"
-                    + $"<C1><S1>{status}<S><C><Br><C0><S0>{time[..dot]}<S><S1> {time[(dot + 1)..]}<S><C>"
-                    + (signature.Length > 0 ? $"<Br><C1><S1>{signature}<S><C>" : "");
+            var head = $"<P={RtssTimerX},{RtssTimerY}><C0={Overlay.TimerColor}><C1={Overlay.OsdColor}><C2={Overlay.SignatureColor}><S0={size}><S1=-{size / 2}>";
+            text += Overlay.TimerHorizontal
+                // 横排：签名、状态、时间排成一行（原版的横排样式）
+                ? head + $"<S0><C2>{(signature.Length > 0 ? signature + "   " : "")}<C><C1>{status}<S><C><C0><S0>  {time[..dot]}<S><S1> {time[(dot + 1)..]}<S><C>"
+                : head + $"<C1><S1>{status}<S><C><Br><C0><S0>{time[..dot]}<S><S1> {time[(dot + 1)..]}<S><C>"
+                       + (signature.Length > 0 ? $"<Br><C2><S1>{signature}<S><C>" : "");
         }
         if (RtssOsdCrosshair && Overlay.CrosshairEnabled && (!Overlay.CrosshairOnlyForeground || Game.IsForeground()))
         {

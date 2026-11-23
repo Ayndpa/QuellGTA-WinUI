@@ -3,6 +3,9 @@ using static QuellGTA.Native.NativeMethods;
 
 namespace QuellGTA.Services;
 
+/// <summary>热键引擎，对应原版的「代理 / 轮询 / 原始」三种热键模式。</summary>
+public enum HotkeyEngine { Hook = 0, Polling = 1, RawInput = 2 }
+
 [Flags]
 public enum HotkeyMods { None = 0, Ctrl = 1, Alt = 2, Shift = 4 }
 
@@ -84,13 +87,15 @@ public sealed class HotkeyService : IDisposable
     /// <summary>判断热键时忽略哪些修饰键（原版「禁用 Alt / Ctrl / Shift 检测」）。</summary>
     public HotkeyMods IgnoreMods { get; set; }
 
-    /// <summary>轮询模式：不装钩子，定时查询按键状态。下次 Start 时生效。</summary>
-    public bool UsePolling { get; set; }
+    /// <summary>用哪种方式监听键鼠。下次 Start 时生效。</summary>
+    public HotkeyEngine Engine { get; set; }
+
+    private nint _rawWindow;
 
     /// <summary>钩子最近一次收到键鼠事件的时刻（Environment.TickCount64），自检用。</summary>
     public long LastEventTick { get; private set; } = Environment.TickCount64;
 
-    public bool IsRunning => _polling || _keyboardHook != 0;
+    public bool IsRunning => _polling || _keyboardHook != 0 || _rawWindow != 0;
 
     public void Set(string name, Hotkey hotkey)
     {
@@ -109,7 +114,7 @@ public sealed class HotkeyService : IDisposable
     {
         if (_thread is not null) return;
         LastEventTick = Environment.TickCount64;
-        if (UsePolling)
+        if (Engine == HotkeyEngine.Polling)
         {
             _stopPolling = false;
             _polling = true;
@@ -118,6 +123,13 @@ public sealed class HotkeyService : IDisposable
             return;
         }
         var ready = new ManualResetEventSlim();
+        if (Engine == HotkeyEngine.RawInput)
+        {
+            _thread = new Thread(() => RawInputLoop(ready)) { IsBackground = true, Name = "QuellGTA.HotkeyRaw", Priority = ThreadPriority.AboveNormal };
+            _thread.Start();
+            ready.Wait(2000);
+            return;
+        }
         _thread = new Thread(() =>
         {
             _threadId = GetCurrentThreadId();
@@ -213,6 +225,108 @@ public sealed class HotkeyService : IDisposable
             }
         }
         return CallNextHookEx(0, code, wParam, lParam);
+    }
+
+    // ───────── 原始输入模式 ─────────
+
+    private const uint WM_INPUT = 0x00FF, RID_INPUT = 0x10000003, RIDEV_INPUTSINK = 0x100, RIM_TYPEMOUSE = 0, RIM_TYPEKEYBOARD = 1;
+    private static readonly int HeaderSize = Marshal.SizeOf<RAWINPUTHEADER>();
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RAWINPUTDEVICE { public ushort UsagePage, Usage; public uint Flags; public nint Target; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RAWINPUTHEADER { public uint Type, Size; public nint Device, WParam; }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool RegisterRawInputDevices(RAWINPUTDEVICE[] devices, uint count, uint size);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetRawInputData(nint handle, uint command, nint data, ref uint size, uint headerSize);
+
+    [DllImport("user32.dll")]
+    private static extern nint DispatchMessageW(ref MSG msg);
+
+    /// <summary>
+    /// 热键_原始_注册：在一个只收消息的隐藏窗口上注册原始输入（RIDEV_INPUTSINK，窗口不在前台也能收到）。
+    /// 原始输入只是旁听，不能吃掉按键，所以改键时按下的键仍会传给当前窗口。
+    /// </summary>
+    private void RawInputLoop(ManualResetEventSlim ready)
+    {
+        _threadId = GetCurrentThreadId();
+        var hwnd = Native.OverlayNative.CreateWindowExW(0, "STATIC", "QuellGTA.RawInput", 0, 0, 0, 0, 0, -3 /* HWND_MESSAGE */, 0, 0, 0);
+        if (hwnd != 0)
+        {
+            var devices = new[]
+            {
+                new RAWINPUTDEVICE { UsagePage = 1, Usage = 6, Flags = RIDEV_INPUTSINK, Target = hwnd }, // 键盘
+                new RAWINPUTDEVICE { UsagePage = 1, Usage = 2, Flags = RIDEV_INPUTSINK, Target = hwnd }, // 鼠标
+            };
+            if (RegisterRawInputDevices(devices, (uint)devices.Length, (uint)Marshal.SizeOf<RAWINPUTDEVICE>())) _rawWindow = hwnd;
+            else Native.OverlayNative.DestroyWindow(hwnd);
+        }
+        ready.Set();
+        if (_rawWindow == 0) return;
+
+        var buffer = Marshal.AllocHGlobal(256);
+        try
+        {
+            while (GetMessageW(out var msg, 0, 0, 0) > 0)
+            {
+                if (msg.message == WM_INPUT) OnRawInput(msg.lParam, buffer);
+                DispatchMessageW(ref msg);
+            }
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(buffer);
+            // 窗口销毁后注册自动失效
+            Native.OverlayNative.DestroyWindow(_rawWindow);
+            _rawWindow = 0;
+        }
+    }
+
+    private void OnRawInput(nint handle, nint buffer)
+    {
+        uint size = 256;
+        if (GetRawInputData(handle, RID_INPUT, buffer, ref size, (uint)HeaderSize) is 0 or uint.MaxValue) return;
+        LastEventTick = Environment.TickCount64;
+        var type = (uint)Marshal.ReadInt32(buffer);
+        var data = buffer + HeaderSize;
+        if (type == RIM_TYPEKEYBOARD)
+        {
+            // RAWKEYBOARD：MakeCode, Flags, Reserved, VKey（各 2 字节）, Message, ExtraInformation（各 4 字节）
+            var flags = (ushort)Marshal.ReadInt16(data, 2);
+            var vk = (ushort)Marshal.ReadInt16(data, 6);
+            var extra = Marshal.ReadInt32(data, 12);
+            if (extra == InjectedTag || vk is 0 or 0xFF) return;
+            OnKey(vk, (flags & 1) == 0, allowCapture: true);
+        }
+        else if (type == RIM_TYPEMOUSE)
+        {
+            // RAWMOUSE：usFlags（2 字节 + 2 字节对齐）, usButtonFlags, usButtonData, ulRawButtons, lLastX, lLastY, ulExtraInformation
+            var buttons = (ushort)Marshal.ReadInt16(data, 4);
+            var wheelData = Marshal.ReadInt16(data, 6);
+            var extra = Marshal.ReadInt32(data, 20);
+            if (buttons == 0 || extra == InjectedTag) return;
+            (int flag, int vk, bool down, bool capture)[] map =
+            [
+                (0x0001, 0x01, true, false), (0x0002, 0x01, false, false),
+                (0x0004, 0x02, true, false), (0x0008, 0x02, false, false),
+                (0x0010, 0x04, true, true), (0x0020, 0x04, false, true),
+                (0x0040, 0x05, true, true), (0x0080, 0x05, false, true),
+                (0x0100, 0x06, true, true), (0x0200, 0x06, false, true),
+            ];
+            foreach (var (flag, vk, down, capture) in map)
+                if ((buttons & flag) != 0) OnKey(vk, down, capture);
+            if ((buttons & 0x0400) != 0 && wheelData != 0)
+            {
+                var wheel = wheelData > 0 ? WheelUp : WheelDown;
+                OnKey(wheel, true, false);
+                OnKey(wheel, false, false);
+            }
+        }
     }
 
     // ───────── 轮询模式 ─────────

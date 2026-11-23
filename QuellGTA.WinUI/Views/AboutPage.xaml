@@ -16,7 +16,7 @@
 
             <InfoBar IsOpen="True" IsClosable="False" Severity="Informational" Margin="0,12,0,0"
                      Title="移植版尚未包含原版的全部功能"
-                     Message="未移植的都依赖原版内嵌的外部程序：RTSS 锁帧与显示、自动骇入、模拟手柄、修改头像、帮会切换、按 Steam 好友加入战局、进程守护、Devcon / WFP 断网模式。详见 README。" />
+                     Message="没有移植的有：修改头像与帮会切换（不移植）、两种指纹仍用自动指纹而不是 AutoHack 的算法、原版的识别过程叠加层等。完整列表见 README。" />
 
             <TextBlock Text="统计数据" Style="{StaticResource SectionHeaderStyle}" />
             <Grid ColumnSpacing="8" Margin="0,0,0,4">

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>QuellGTA.Plugin.WeaponWheel</AssemblyName>
+    <RootNamespace>QuellGTA.Plugin.WeaponWheel</RootNamespace>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+</Project>

@@ -43,6 +43,10 @@
                 <TextBox x:Name="CustomBox" Width="220" KeyDown="Custom_KeyDown" LostFocus="Custom_LostFocus" />
             </local:SettingRow>
 
+            <local:SettingRow Title="自动切换双版本存档" Description="传承版和增强版各用一份本程序的配置。切换游戏版本（包括自动检测切换）时换上对应版本的配置并重启本程序。使用自定义进程时不可用。">
+                <ToggleSwitch x:Name="DualProfileSwitch" Toggled="DualProfile_Toggled" />
+            </local:SettingRow>
+
             <!-- 启动选项 -->
             <TextBlock Text="启动选项" Style="{StaticResource SectionHeaderStyle}" />
             <InfoBar x:Name="ArgsInfo" IsOpen="False" IsClosable="False" Severity="Warning" Margin="0,0,0,4"

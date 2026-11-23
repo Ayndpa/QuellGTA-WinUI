@@ -8,7 +8,8 @@ namespace QuellGTA.Services.AutoHack;
 /// 会用蓝色反复闪烁几次。看到同一个闪烁图案连续出现 3 次就锁定答案，然后从左到右：
 /// 把光标（白色外圈）上下移到这一列的目标行，回车确认，等光标跳到下一列再继续。
 /// 右下角有个四格的关卡指示框，焦点框移到下一格表示进入下一关，重新开始看闪烁。
-/// 原版在画面上叠加显示识别结果的那部分没有移植。
+/// 叠加层（原版的 OverlayProc）：每个圆圈左下角一个 L 形角标——红色是这一帧在闪的，蓝色是锁定的答案路径，其余绿色；
+/// 光标所在的圆圈右边画一个黄色的「[」形标记；关卡指示框里的焦点框下面画一个小三角（这一帧认出来是绿色，沿用上次的位置是橙色）。
 /// </summary>
 public sealed class FlashingHack(IHackHost host) : IHackGame
 {
@@ -56,6 +57,14 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
     private Geometry? _geometry;
     private int[] _flashUnion = new int[GridCells];
     private PatternTracker _tracker = new();
+
+    // 只给叠加层用的状态（原版 AppState 里的 current / levelFocus*、minigameVisible）
+    private int[] _current = new int[GridCells];
+    private bool _minigameVisible;
+    private bool _levelFocusVisible, _levelFocusDetectedThisFrame;
+    private UiRect _levelFocus;          // 屏幕坐标
+    private int _overlayScreenH = 1080;  // 原版按 SM_CYSCREEN 缩放三角形，这里用游戏客户区高度
+    private List<HackShape>? _overlayShown;
 
     private static long Tick => Environment.TickCount64;
 
@@ -596,10 +605,12 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
     }
 
     /// <summary>当前是第几关（1–4），看不出来返回 0。</summary>
-    private int DetectLevelSlotFromShot(HackFrame shot)
+    private int DetectLevelSlotFromShot(HackFrame shot, out UiRect focusScreen)
     {
+        focusScreen = default;
         if (!FindLevelBlock(shot, out var block)) return 0;
         if (!FindLevelFocusFrame(shot, block, out var focus)) return 0;
+        focusScreen = new UiRect(ToScreenX(shot, focus.Left), ToScreenY(shot, focus.Top), ToScreenX(shot, focus.Right), ToScreenY(shot, focus.Bottom));
         double blockW = Math.Max(1, block.Right - block.Left + 1);
         var focusCenterX = (focus.Left + focus.Right) * 0.5;
         var ratio = (focusCenterX - block.Left) / blockW;
@@ -609,9 +620,21 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
 
     private int DetectLevelSlotFromCaptured(HackFrame? shot)
     {
-        var slot = shot is null ? 0 : DetectLevelSlotFromShot(shot);
-        if (slot > 0) _levelFocusMissFrames = 0;
-        else _levelFocusMissFrames++;
+        var focus = default(UiRect);
+        var slot = shot is null ? 0 : DetectLevelSlotFromShot(shot, out focus);
+        if (slot > 0)
+        {
+            _levelFocusMissFrames = 0;
+            _levelFocus = focus;
+            _levelFocusVisible = true;
+            _levelFocusDetectedThisFrame = true;
+        }
+        else
+        {
+            _levelFocusDetectedThisFrame = false;
+            // 连续几帧没认出来才收起三角，期间沿用上次的位置（橙色）
+            if (++_levelFocusMissFrames >= LevelFocusHideAfterMissFrames) _levelFocusVisible = false;
+        }
         return slot;
     }
 
@@ -817,6 +840,7 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
         _finalSubmitAt = 0;
         _flashUnion = new int[GridCells];
         _tracker = new PatternTracker();
+        _current = new int[GridCells];
     }
 
     private void ClearRuntimeState()
@@ -826,7 +850,106 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
         _observedLevelSlot = 0;
         _observedLevelStableFrames = 0;
         _levelFocusMissFrames = 0;
+        _levelFocusVisible = false;
+        _levelFocusDetectedThisFrame = false;
+        _levelFocus = default;
         ClearLevelState();
+    }
+
+    // ───────── 叠加层（原版的 OverlayProc WM_PAINT） ─────────
+
+    /// <summary>
+    /// 按当前状态画一帧。圆圈坐标在锁定网格时已经换成了屏幕坐标，直接用。
+    /// 不在小游戏里或网格还没找到时返回空内容（原版这时只画一张颜色键黑底，等于什么都不显示）。
+    /// </summary>
+    private HackScene BuildOverlayScene()
+    {
+        var scene = new HackScene();
+        if (!_minigameVisible || !_circlesReady) return scene;
+
+        // 每个圆圈左下角的 L 形角标：先画一道深色粗线当描边，再画彩色细线
+        var answerReady = _tracker.TargetReady; // 原版的 answerPath 就是锁定那一刻的 target，两者同时清空
+        for (var idx = 0; idx < GridCells; idx++)
+        {
+            var circle = _circles[idx];
+            if (circle.R <= 0) continue;
+            var color = _current[idx] != 0 ? 0xFFFF2828u : 0xFF00E650u; // RGB(255,40,40) / RGB(0,230,80)
+            if (answerReady && _tracker.Target[idx] != 0) color = 0xFF28AAFFu; // RGB(40,170,255)
+            var offset = Math.Max(6, Round(circle.R * 0.21));
+            var len = Math.Max(10, Round(circle.R * 0.38));
+            var glowWidth = Math.Max(5, Round(circle.R * 0.18));
+            var penWidth = Math.Max(3, Round(circle.R * 0.10));
+            int x = circle.X - circle.R - offset, y = circle.Y + circle.R + offset;
+            scene.Line(x, y, x + len, y, 0xFF0C0C0C, glowWidth);
+            scene.Line(x, y, x, y - len, 0xFF0C0C0C, glowWidth);
+            scene.Line(x, y, x + len, y, color, penWidth);
+            scene.Line(x, y, x, y - len, color, penWidth);
+        }
+
+        // 光标所在圆圈右边的黄色标记：两根竖线 + 上下两道短横
+        if (_selectedIndex is >= 0 and < GridCells)
+        {
+            var circle = _circles[_selectedIndex];
+            var penWidth = Math.Max(3, Round(circle.R * 0.09));
+            var sideOffset = Math.Max(22, Round(circle.R * 0.80));
+            var halfHeight = Math.Max(16, Round(circle.R * 0.52));
+            var railGap = Math.Max(7, Round(circle.R * 0.23));
+            var capLen = Math.Max(12, Round(circle.R * 0.38));
+            const uint yellow = 0xFFFFF028; // RGB(255,240,40)
+            int x = circle.X + circle.R + sideOffset, y = circle.Y;
+            scene.Line(x, y - halfHeight, x, y + halfHeight, yellow, penWidth);
+            scene.Line(x + railGap, y - halfHeight, x + railGap, y + halfHeight, yellow, penWidth);
+            scene.Line(x, y - halfHeight, x + capLen, y - halfHeight, yellow, penWidth);
+            scene.Line(x, y + halfHeight, x + capLen, y + halfHeight, yellow, penWidth);
+        }
+
+        // 关卡焦点框下方的倒三角，带一圈深色阴影。没有多边形图元，用逐行的横线填出来
+        if (_levelFocusVisible && _observedLevelStableFrames >= 2)
+        {
+            var screenH = Math.Max(1, _overlayScreenH);
+            var cx = (_levelFocus.Left + _levelFocus.Right) / 2;
+            var top = _levelFocus.Bottom + ScalePx(8, screenH);
+            var halfW = ScalePx(11, screenH);
+            var triH = ScalePx(10, screenH);
+            var grow = ScalePx(2, screenH);
+            var focusColor = _levelFocusDetectedThisFrame ? 0xFF00F55Fu : 0xFFFFBE2Du; // RGB(0,245,95) / RGB(255,190,45)
+            FillDownTriangle(scene, cx, top - grow, halfW + grow, triH + grow * 2, 0xFF080C0A); // RGB(8,12,10)
+            FillDownTriangle(scene, cx, top, halfW, triH, focusColor);
+        }
+        return scene;
+    }
+
+    /// <summary>尖朝下的实心三角：上边从 cx - halfW 到 cx + halfW，尖在 (cx, top + height)。</summary>
+    private static void FillDownTriangle(HackScene scene, int cx, int top, int halfW, int height, uint color)
+    {
+        height = Math.Max(1, height);
+        for (var row = 0; row <= height; row++)
+        {
+            var half = halfW * (1.0f - row / (float)height);
+            scene.Line(cx - half, top + row, cx + half, top + row, color, 1.5f);
+        }
+    }
+
+    /// <summary>
+    /// 原版每帧 InvalidateRect 叠加层窗口重画；这里每帧交一份新内容，和上一份一样就跳过。
+    /// 叠加层关着时（syncOverlay 里的 SW_HIDE）不准备内容，正在显示的收起来。
+    /// </summary>
+    private void PublishOverlay()
+    {
+        var overlay = host.Overlay;
+        if (!overlay.Enabled) { HideOverlay(); return; }
+        var scene = BuildOverlayScene();
+        if (scene.IsEmpty) { HideOverlay(); return; }
+        if (_overlayShown is not null && _overlayShown.SequenceEqual(scene.Shapes)) return;
+        overlay.Show(scene);
+        _overlayShown = scene.Shapes;
+    }
+
+    private void HideOverlay()
+    {
+        if (_overlayShown is null) return;
+        _overlayShown = null;
+        host.Overlay.Clear();
     }
 
     // ───────── 入口 ─────────
@@ -880,7 +1003,10 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
             status(text);
         }
         ResetForSession();
+        _minigameVisible = true;
+        _overlayShown = null; // 上一次会话结束后宿主已经清过叠加层
         if (!_circlesReady) AutoLocateRoi();
+        PublishOverlay();
         var lostFrames = 0;
         var completedAnyLevel = false;
         SetStatus("flashing: locating");
@@ -889,16 +1015,19 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
             var loopStart = Stopwatch.GetTimestamp();
             var detectBlue = !_tracker.TargetReady;
             var shot = host.Capture();
+            if (shot is not null) _overlayScreenH = shot.ClientHeight;
             UpdateObservedLevelSlot(DetectLevelSlotFromCaptured(shot), out var levelChanged, AwaitingFinalSubmitResult());
             if (levelChanged)
             {
                 completedAnyLevel = true;
                 SetStatus("flashing: next level");
                 ClearLevelState();
+                PublishOverlay();
                 Thread.Sleep(0);
                 continue;
             }
-            if (!CheckMinigamePage(shot))
+            _minigameVisible = CheckMinigamePage(shot);
+            if (!_minigameVisible)
             {
                 if (++lostFrames >= 15)
                 {
@@ -916,6 +1045,7 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
                 _selectedIndex = -1;
                 var lastTargetCol = LastTargetColumn(_tracker.Target);
                 SetStatus(_pendingVerifyCol >= lastTargetCol ? "flashing: waiting next level" : "flashing: verifying column");
+                PublishOverlay();
                 Thread.Sleep(0);
                 continue;
             }
@@ -923,6 +1053,7 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
             {
                 _selectedIndex = -1;
                 SetStatus("flashing: waiting next level");
+                PublishOverlay();
                 Thread.Sleep(0);
                 continue;
             }
@@ -930,11 +1061,13 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
             {
                 SetStatus("flashing: locating");
                 AutoLocateRoi();
+                PublishOverlay();
                 Thread.Sleep(30);
                 continue;
             }
             SetStatus(detectBlue ? "flashing: reading pattern" : "flashing: auto input");
             var (framePattern, selectedIndex) = CaptureFrame(detectBlue);
+            _current = framePattern;
             _selectedIndex = selectedIndex;
             if (detectBlue)
             {
@@ -955,10 +1088,13 @@ public sealed class FlashingHack(IHackHost host) : IHackGame
                 }
             }
             TickAutoInput();
+            PublishOverlay(); // 放在发键之后：画图不耽误按键
             var elapsedMs = (Stopwatch.GetTimestamp() - loopStart) * 1000.0 / Stopwatch.Frequency;
             var sleepMs = TimerMs - Round(elapsedMs);
             Thread.Sleep(sleepMs > 1 ? sleepMs : 0);
         }
+        HideOverlay(); // 原版的 HideOverlay
+        _minigameVisible = false;
         ResetInGameCache();
         return completedAnyLevel;
     }

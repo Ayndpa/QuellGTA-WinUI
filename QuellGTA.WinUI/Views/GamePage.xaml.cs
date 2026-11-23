@@ -14,12 +14,15 @@ public sealed partial class GamePage : Page
     public GamePage()
     {
         InitializeComponent();
+        Loaded += (_, _) => OnShown();
         BuildExtras();
         AutoDetectSwitch.IsOn = Core.Game.AutoDetect;
+        DualProfileSwitch.IsOn = Core.Profiles.DualProfile;
         CustomBox.Text = Core.Game.CustomProcessName;
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e)
+    /// <summary>页面每次显示时刷新（页面由主窗口直接创建，不经过 Frame 导航）。</summary>
+    private void OnShown()
     {
         _ready = false;
         EditionCombo.SelectedIndex = Core.Game.Edition switch
@@ -53,6 +56,19 @@ public sealed partial class GamePage : Page
         if (_ready) Core.Game.AutoDetect = AutoDetectSwitch.IsOn;
     }
 
+    private async void DualProfile_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (!_ready || DualProfileSwitch.IsOn == Core.Profiles.DualProfile) return;
+        if (DualProfileSwitch.IsOn && Core.Game.Edition == GameEdition.Custom)
+        {
+            DualProfileSwitch.IsOn = false;
+            await Dialogs.MessageAsync(this, "自动切换双版本存档", Lang.C(475));
+            return;
+        }
+        Core.Profiles.DualProfile = DualProfileSwitch.IsOn;
+        if (DualProfileSwitch.IsOn) await Dialogs.MessageAsync(this, "自动切换双版本存档", Lang.C(474) + "\n\n" + Lang.C(475));
+    }
+
     private void Edition_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (!_ready) return;
@@ -62,12 +78,16 @@ public sealed partial class GamePage : Page
             2 => GameEdition.Custom,
             _ => GameEdition.Enhanced,
         };
+        var before = Core.Game.Edition;
         Core.Game.Apply(edition, CustomBox.Text);
         if (edition == GameEdition.Custom && AutoDetectSwitch.IsOn)
             AutoDetectSwitch.IsOn = false; // 原版：自定义进程时自动检测不可用
+        if (edition == GameEdition.Custom && DualProfileSwitch.IsOn)
+            DualProfileSwitch.IsOn = false; // 自定义进程时双版本存档也不可用
         Core.Log.Write($"游戏版本已切换：{Core.Game.ProcessName}", 1);
         RefreshEdition();
         RefreshGraphics();
+        Core.OnEditionChanged(before);
     }
 
     private void ApplyCustom()

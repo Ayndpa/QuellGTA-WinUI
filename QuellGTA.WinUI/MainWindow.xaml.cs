@@ -52,7 +52,10 @@ public sealed partial class MainWindow : Window
         App.Core.Log.Important += ShowToast;
         App.Core.StateChanged += () => DispatcherQueue.TryEnqueue(UpdateTitle);
         App.Core.Team.Changed += () => DispatcherQueue.TryEnqueue(UpdateTitle);
+        App.Core.AutoHack.Changed += () => DispatcherQueue.TryEnqueue(UpdateTitle);
         App.Core.ExitRequested += () => DispatcherQueue.TryEnqueue(Exit);
+        App.Core.RestartRequested += () => DispatcherQueue.TryEnqueue(Restart);
+        App.Core.FrameLimitInputRequested += () => DispatcherQueue.TryEnqueue(AskFrameLimit);
         App.Core.Bots.CefDebuggingNeeded += () => DispatcherQueue.TryEnqueue(AskCefDebugging);
         if (App.Core.Updates.CheckOnStartup) _ = App.Core.Updates.CheckAsync();
         AppWindow.Closing += OnClosing;
@@ -104,10 +107,48 @@ public sealed partial class MainWindow : Window
         var exe = Environment.ProcessPath;
         if (exe is not null)
         {
-            // 等自己退出（释放单实例锁）之后再启动新的
-            Shell.Run("cmd.exe", $"/c timeout /t 2 /nobreak >nul & start \"\" \"{exe}\"", wait: false);
+            // 等自己退出（释放单实例锁）之后再启动新的。
+            // 不能用 cmd 的 timeout：没有控制台时它立刻报错退出，新实例会在旧实例还没退出时启动，被单实例锁挡回去
+            Shell.PowerShell($"Wait-Process -Id {Environment.ProcessId} -Timeout 30 -ErrorAction SilentlyContinue; Start-Process -FilePath '{exe.Replace("'", "''")}'", wait: false);
         }
         Exit();
+    }
+
+    private bool _askingFrameLimit;
+
+    /// <summary>RTSS_手动输入：锁帧键设成「手动输入」时，弹出主窗口让你输入目标帧数。</summary>
+    private async void AskFrameLimit()
+    {
+        if (_askingFrameLimit || Content is not FrameworkElement owner) return;
+        _askingFrameLimit = true;
+        try
+        {
+            ShowWindow();
+            var current = App.Core.RtssCurrentLimit;
+            var box = new NumberBox
+            {
+                Minimum = 0, Maximum = 999, SmallChange = 10, LargeChange = 30,
+                Value = current >= 0 ? current : double.NaN,
+                SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Inline,
+                PlaceholderText = "留空不修改",
+            };
+            var panel = new StackPanel { Spacing = 12 };
+            panel.Children.Add(new TextBlock { Text = Lang.C(449), TextWrapping = TextWrapping.Wrap });
+            panel.Children.Add(box);
+            var dialog = new ContentDialog
+            {
+                Title = "RTSS 锁帧",
+                Content = panel,
+                PrimaryButtonText = "应用",
+                CloseButtonText = "取消",
+                DefaultButton = ContentDialogButton.Primary,
+            };
+            if (await Views.Dialogs.CustomAsync(owner, dialog) != ContentDialogResult.Primary || double.IsNaN(box.Value)) return;
+            var fps = (int)Math.Round(box.Value);
+            if (fps is < 0 or > 999) { await Views.Dialogs.MessageAsync(owner, "RTSS 锁帧", Lang.C(409)); return; }
+            await Task.Run(() => App.Core.ApplyFrameLimit(fps));
+        }
+        finally { _askingFrameLimit = false; }
     }
 
     /// <summary>按 Steam 好友加入时连不上 Steam：问一下要不要开启它的 CEF 远程调试（要重启 Steam）。</summary>
@@ -128,7 +169,7 @@ public sealed partial class MainWindow : Window
 
     private bool _askingCef;
 
-    private void Exit()
+    public void Exit()
     {
         _exiting = true;
         Close();
@@ -181,6 +222,13 @@ public sealed partial class MainWindow : Window
         if (core.Team.Mode == TeamMode.Host) parts.Add("房主");
         if (core.Team.Mode == TeamMode.Client) parts.Add("已联机");
         TitleStatus.Text = string.Join(" · ", parts);
+
+        // 导航上的状态角标：有东西正在生效时提醒一下
+        NetworkItem.InfoBadge = core.NetBlocked || core.NicDisabled ? new InfoBadge { Style = (Style)Application.Current.Resources["CriticalIconInfoBadgeStyle"] } : null;
+        SessionItem.InfoBadge = core.SoloActive ? new InfoBadge { Style = (Style)Application.Current.Resources["CautionIconInfoBadgeStyle"] } : null;
+        TeamItem.InfoBadge = core.Team.Mode is TeamMode.Host or TeamMode.Client ? new InfoBadge { Style = (Style)Application.Current.Resources["SuccessDotInfoBadgeStyle"] } : null;
+        AfkItem.InfoBadge = core.AfkActive ? new InfoBadge { Style = (Style)Application.Current.Resources["AttentionDotInfoBadgeStyle"] } : null;
+        HackItem.InfoBadge = core.AutoHack.Running ? new InfoBadge { Style = (Style)Application.Current.Resources["AttentionDotInfoBadgeStyle"] } : null;
     }
 
     /// <summary>重要日志（等级 ≥ 2）：窗口可见时在底部弹出提示条，隐藏在托盘时改用气泡提示。</summary>
@@ -211,6 +259,11 @@ public sealed partial class MainWindow : Window
     private void Nav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
     {
         if (args.SelectedItem is not NavigationViewItem { Tag: string tag }) return;
+        if (tag.StartsWith("plugin:", StringComparison.Ordinal))
+        {
+            ShowPlugin(tag["plugin:".Length..]);
+            return;
+        }
         var page = tag switch
         {
             "network" => typeof(NetworkPage),
@@ -218,17 +271,74 @@ public sealed partial class MainWindow : Window
             "team" => typeof(TeamPage),
             "bot" => typeof(BotPage),
             "macros" => typeof(MacroPage),
+            "afk" => typeof(AfkPage),
+            "hack" => typeof(HackPage),
             "overlay" => typeof(OverlayPage),
             "game" => typeof(GamePage),
             "repair" => typeof(RepairPage),
             "migrate" => typeof(MigratePage),
             "totp" => typeof(TotpPage),
-            "hotkeys" => typeof(HotkeysPage),
+            "plugins" => typeof(PluginsPage),
+            "activity" => typeof(ActivityPage),
             "settings" => typeof(SettingsPage),
             "about" => typeof(AboutPage),
-            _ => typeof(HomePage),
+            _ => typeof(DashboardPage),
         };
-        if (ContentFrame.CurrentSourcePageType != page)
-            ContentFrame.Navigate(page, null, new EntranceNavigationTransitionInfo());
+        Show(page);
+    }
+
+    /// <summary>
+    /// 显示页面。不用 Frame.Navigate：用代码写的页面（没有 XAML）没有 XAML 类型信息，Navigate 会直接崩溃。
+    /// 每次都新建页面实例，页面打开时读到的就是最新设置；切换动画由 Frame 的内容过渡负责。
+    /// </summary>
+    private void Show(Type page, bool force = false)
+    {
+        if (!force && ContentFrame.Content?.GetType() == page) return;
+        ContentFrame.Content = (UIElement)Activator.CreateInstance(page)!;
+    }
+
+    /// <summary>导航栏里加上已加载、并且有页面的插件（启动时调用一次）。</summary>
+    public void AddPluginItems()
+    {
+        var withPages = App.Core.Plugins.Plugins.Where(p => p.Loaded).ToList();
+        if (withPages.Count == 0) return;
+        Nav.MenuItems.Add(new NavigationViewItemHeader { Content = "插件" });
+        foreach (var entry in withPages)
+            Nav.MenuItems.Add(new NavigationViewItem
+            {
+                Content = entry.Info.Name,
+                Tag = "plugin:" + entry.Info.Id,
+                Icon = new FontIcon { Glyph = entry.Info.Glyph },
+            });
+    }
+
+    /// <summary>显示插件页面。插件出错时显示错误，不影响主程序。</summary>
+    private void ShowPlugin(string id)
+    {
+        var entry = App.Core.Plugins.Plugins.FirstOrDefault(p => p.Info.Id == id);
+        UIElement? page = null;
+        string? error = null;
+        try { page = entry?.Instance?.CreatePage(); }
+        catch (Exception ex) { error = ex.Message; }
+        if (page is null)
+        {
+            var info = new InfoBar
+            {
+                IsOpen = true, IsClosable = false, Margin = new Thickness(28),
+                Severity = error is null ? InfoBarSeverity.Informational : InfoBarSeverity.Error,
+                Title = entry?.Info.Name ?? id,
+                Message = error is null ? "这个插件没有页面。" : "插件页面出错：" + error,
+            };
+            page = info;
+        }
+        ContentFrame.Content = page;
+    }
+
+    /// <summary>重新加载当前页面（页面上的状态被别处改了之后用）。</summary>
+    public void ReloadPage()
+    {
+        if (Nav.SelectedItem is NavigationViewItem { Tag: string tag } && tag.StartsWith("plugin:", StringComparison.Ordinal))
+            ShowPlugin(tag["plugin:".Length..]);
+        else if (ContentFrame.Content is not null) Show(ContentFrame.Content.GetType(), force: true);
     }
 }

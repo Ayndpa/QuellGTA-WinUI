@@ -31,27 +31,30 @@
         <NavigationView x:Name="Nav" Grid.Row="1"
                         IsBackButtonVisible="Collapsed"
                         IsSettingsVisible="False"
-                        OpenPaneLength="180"
-                        PaneDisplayMode="Left"
-                        IsPaneToggleButtonVisible="False"
+                        OpenPaneLength="200"
+                        PaneDisplayMode="Auto"
+                        CompactModeThresholdWidth="0"
+                        ExpandedModeThresholdWidth="900"
+                        IsTitleBarAutoPaddingEnabled="False"
                         SelectionChanged="Nav_SelectionChanged">
             <NavigationView.MenuItems>
-                <NavigationViewItem Content="主页" Tag="home">
+                <NavigationViewItem Content="概览" Tag="home">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE80F;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="断网" Tag="network">
+                <NavigationViewItemHeader Content="游戏内" />
+                <NavigationViewItem Content="网络" Tag="network" x:Name="NetworkItem">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE774;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="战局" Tag="session">
+                <NavigationViewItem Content="战局" Tag="session" x:Name="SessionItem">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7C1;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="联机" Tag="team">
+                <NavigationViewItem Content="联机" Tag="team" x:Name="TeamItem">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE716;" />
                     </NavigationViewItem.Icon>
@@ -61,9 +64,19 @@
                         <FontIcon Glyph="&#xE724;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="宏键" Tag="macros">
+                <NavigationViewItem Content="宏" Tag="macros">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE765;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="挂机" Tag="afk" x:Name="AfkItem">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE823;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="骇入" Tag="hack" x:Name="HackItem">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE7EF;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem Content="浮窗" Tag="overlay">
@@ -71,7 +84,7 @@
                         <FontIcon Glyph="&#xE7B3;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItemSeparator />
+                <NavigationViewItemHeader Content="工具" />
                 <NavigationViewItem Content="游戏" Tag="game">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7FC;" />
@@ -92,13 +105,18 @@
                         <FontIcon Glyph="&#xE72E;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="热键" Tag="hotkeys">
+                <NavigationViewItem Content="插件" Tag="plugins">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE92E;" />
+                        <FontIcon Glyph="&#xEA86;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
             <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="活动" Tag="activity">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE81C;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem Content="设置" Tag="settings">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE713;" />
@@ -112,7 +130,13 @@
             </NavigationView.FooterMenuItems>
 
             <Grid>
-                <Frame x:Name="ContentFrame" />
+                <Frame x:Name="ContentFrame">
+                    <Frame.ContentTransitions>
+                        <TransitionCollection>
+                            <EntranceThemeTransition FromVerticalOffset="40" />
+                        </TransitionCollection>
+                    </Frame.ContentTransitions>
+                </Frame>
                 <InfoBar x:Name="Toast" VerticalAlignment="Bottom" HorizontalAlignment="Center"
                          Margin="24" MaxWidth="560" IsOpen="False" IsClosable="True" />
             </Grid>

@@ -33,6 +33,20 @@ public sealed partial class QuellCore : IDisposable
     /// <summary>自编宏的热键名前缀，后面跟宏的 Id。</summary>
     public const string MacroHotkeyPrefix = "宏:";
 
+    /// <summary>插件快捷键的热键名前缀，后面是「插件 id:键名」。</summary>
+    public const string PluginHotkeyPrefix = "插件:";
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, Action<bool>> _pluginHotkeys = new();
+
+    /// <summary>主程序固定的快捷键加上插件注册的快捷键（不含宏）。</summary>
+    public IEnumerable<string> AllHotkeyNames => HotkeyNames.Concat(_pluginHotkeys.Keys.Order(StringComparer.Ordinal));
+
+    /// <summary>插件注册快捷键：读出保存的按键交给热键引擎，触发时调用 handler。</summary>
+    public void RegisterPluginHotkey(string name, Action<bool> handler)
+    {
+        _pluginHotkeys[name] = handler;
+        Hotkeys.Set(name, GetHotkey(name));
+    }
+
     public Settings Settings { get; } = new();
     public LogService Log { get; } = new();
     public GameService Game { get; }
@@ -115,8 +129,12 @@ public sealed partial class QuellCore : IDisposable
     {
         try
         {
+            var before = Game.Edition;
             if (Game.DetectRunningEdition())
+            {
                 Log.Write($"检测到正在运行的游戏：{Game.ProcessName}，已自动切换版本。", 1);
+                OnEditionChanged(before);
+            }
             var running = Game.IsRunning();
             if (running) RememberGamePath();
             ExtrasTick(running);
@@ -694,6 +712,8 @@ public sealed partial class QuellCore : IDisposable
     private void SetSoloState(bool active)
     {
         SoloActive = active;
+        // 原版：开了「被重启后自动恢复状态」才记下卡单状态，意外退出后重新启动时接着把卡单结束掉
+        if (Guard.AutoRecover || !active) Settings.SetBool("状态", "卡单状态", active);
         Notify();
     }
 
@@ -944,6 +964,11 @@ public sealed partial class QuellCore : IDisposable
             if (HotkeysOnlyForeground && !Game.IsForeground()) return;
             if (HotkeysOnlyRunning && !GameRunning) return;
 
+            if (name.StartsWith(PluginHotkeyPrefix, StringComparison.Ordinal))
+            {
+                if (_pluginHotkeys.TryGetValue(name, out var handler)) handler(down);
+                return;
+            }
             if (name.StartsWith(MacroHotkeyPrefix, StringComparison.Ordinal))
             {
                 if (!down) ToggleMacro(name[MacroHotkeyPrefix.Length..]);

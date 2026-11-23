@@ -61,6 +61,8 @@ public interface IHackHost
     HackJob QueueImmediate(int virtualKey, long executeAtTicks, nint expectedForeground);
     /// <summary>丢掉排队中的按键，松开正按着的键。</summary>
     void CancelAll();
+    /// <summary>识别叠加层：把认出来的东西画在游戏画面上。关闭时 Enabled 为 false。</summary>
+    IHackOverlay Overlay { get; }
 }
 
 /// <summary>各模块共用的小工具。</summary>
@@ -121,6 +123,8 @@ public sealed class HackHost : IHackHost, IDisposable
 
     /// <summary>点按的按住时长和两次按键的间隔（毫秒），原版默认都是 20。</summary>
     public int TapHoldMs = 20, TapGapMs = 20;
+
+    public IHackOverlay Overlay { get; set; } = NullHackOverlay.Instance;
 
     public HackHost(GameService game)
     {

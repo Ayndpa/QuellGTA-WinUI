@@ -41,6 +41,10 @@ public partial class App : Application
         Core = new QuellCore();
         Window = new MainWindow();
         Core.Log.Attach(Window.DispatcherQueue);
+        // 插件：先只读 plugin.json，启用了的才加载
+        Core.Plugins.Discover();
+        Core.Plugins.LoadEnabled(info => new Views.PluginHost(info, Window.DispatcherQueue));
+        Window.AddPluginItems();
         // 「启动之后最小化」，或者由开机自启的计划任务带 minimized 参数启动
         var arguments = Environment.GetCommandLineArgs().Skip(1).ToArray();
         Core.HandleCommandLine(arguments);

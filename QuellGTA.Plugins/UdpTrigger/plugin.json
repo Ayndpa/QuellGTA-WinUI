@@ -1,0 +1,10 @@
+{
+  "id": "udp-trigger",
+  "name": "UDP 触发程序",
+  "description": "生成 kill.exe、fwon.exe 这样的小程序：双击（或交给 Stream Deck、宏键盘、其他软件）就让本程序执行对应的操作。原版「UDP 触发程序」和「UDP 端口设置」。",
+  "version": "1.0.0",
+  "author": "MageAngela",
+  "glyph": "",
+  "assembly": "QuellGTA.Plugin.UdpTrigger.dll",
+  "api": 1
+}

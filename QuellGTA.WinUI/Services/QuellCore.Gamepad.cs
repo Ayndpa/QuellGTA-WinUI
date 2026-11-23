@@ -252,6 +252,18 @@ public sealed partial class QuellCore
         var savedMode = (TeamMode)Settings.GetInt("状态", "联机状态", 0);
         if (recover) Log.Write(Lang.C(539), Guard.ShowWarning ? 2 : 0);
 
+        // 卡单状态：上次卡单期间程序意外退出，游戏可能还停在暂停状态。接着走一遍卡单自动线程，到时间后放开游戏
+        if (recover && Settings.GetBool("状态", "卡单状态", false))
+        {
+            lock (_soloGate)
+            {
+                SetSoloState(true);
+                StartSoloTimer(broadcastEnd: false);
+            }
+            Log.Write("上次退出时正在卡单，已恢复卡单状态，到时间后自动结束。", 1);
+        }
+        else if (Settings.GetBool("状态", "卡单状态", false)) Settings.SetBool("状态", "卡单状态", false);
+
         // 断网 / 禁卡状态在启动时总是会接着显示（见构造函数），这里只需要处理联机
         var host = commands.Contains("server") || (recover && savedMode == TeamMode.Host);
         var join = !host && (commands.Contains("connect") || (recover && savedMode is TeamMode.Client or TeamMode.Connecting));

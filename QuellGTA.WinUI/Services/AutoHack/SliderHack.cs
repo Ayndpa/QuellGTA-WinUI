@@ -8,7 +8,8 @@ namespace QuellGTA.Services.AutoHack;
 /// 当前那根的缺口带黄色框并上下移动，要在缺口经过红线时按回车，然后轮到下一根。
 /// 做法：先找红线和 8 根竖条，之后只截当前竖条附近的一小块，以约 60 次 / 秒追踪黄色缺口的位置和速度，
 /// 算出缺口到达红线边缘的时刻，扣掉输入延迟后在那一刻按下回车；每按一次，用「下一根出现黄框的时刻」校准一次延迟。
-/// 原版在画面上画辅助光标和标记的部分没有移植。
+/// 叠加层（原版的 CursorProc / MarksProc）：当前竖条左边一个跟着缺口上下移动的绿色箭头，缺口快到红线时再画一条指向红线边缘的引线；
+/// 红线左端一个小信息框，显示分析频率、预计还有多久到达、端到端延迟。
 /// </summary>
 public sealed class SliderHack(IHackHost host) : IHackGame
 {
@@ -23,6 +24,14 @@ public sealed class SliderHack(IHackHost host) : IHackGame
     private const double InvalidPredictionSeconds = 999.0;
     private const double YellowCenterStripHalfWidthPx = 8.0;
     private const double YellowHalfOverlapPx = 72.0;
+    private const int CursorSize = 64;
+    private const int CursorArrowTopOffset = 14;
+    private const int CursorArrowBottomOffset = 14;
+    private const int CursorArrowRightOffset = 14;
+    private const uint OverlayGreen = 0xFF46FF78;          // RGB(70,255,120)
+    private const uint OverlayTextGreen = 0xFF91FFAF;      // RGB(145,255,175)
+    private const uint OverlayWarningOrange = 0xFFFFAE48;  // RGB(255,174,72)
+    private const uint OverlayBlack = 0xFF0A0E14;          // RGB(10,14,20)
 
     private static int ScaledPx(double value, double scale) => Math.Max(1, Round(value * Math.Clamp(scale, 0.45, 2.25)));
 
@@ -98,6 +107,101 @@ public sealed class SliderHack(IHackHost host) : IHackGame
     }
 
     private InGameCache _cache = new();
+
+    // ───────── 叠加层（原版的 g_cursor* / g_hud* / g_preview 和 CursorProc / MarksProc） ─────────
+
+    /// <summary>叠加层要显示的状态，坐标都是屏幕坐标。原版放在一堆原子变量里，由两个窗口的定时器去读。</summary>
+    private struct OverlayState
+    {
+        // 光标（g_cursorVisible / g_cursorX / g_cursorY / g_cursorTargetY / g_cursorInZone）
+        public bool CursorVisible, CursorInZone;
+        public int CursorX, CursorY, CursorTargetY;
+        // 信息框（g_preview 的 bars / red / scale，以及 g_hudAnalysisHz10 / g_hudTtcMs / g_hudEndToEndMs）
+        public bool PreviewHasBars;
+        public RedBar PreviewRed;
+        public double PreviewScale;
+        public int AnalysisHz10, TtcMs, EndToEndMs;
+    }
+
+    /// <summary>上一次交给叠加层的图元；内容没变就不再重画，null 表示当前没显示。</summary>
+    private List<HackShape>? _overlayShown;
+
+    /// <summary>按状态画一帧：MarksProc 的信息框 + CursorProc 的箭头和引线。原版两个窗口会被夹在虚拟桌面以内，这里不夹。</summary>
+    private static HackScene BuildOverlayScene(in OverlayState state)
+    {
+        var scene = new HackScene();
+        if (state.PreviewHasBars)
+        {
+            // 信息框：红线左端外侧，深色底绿边，三行小字（原版是 16 像素高的 Consolas，不随画面缩放）
+            var infoW = ScaledPx(104, state.PreviewScale);
+            var infoH = ScaledPx(62, state.PreviewScale) / 2 * 2;
+            var gap = ScaledPx(12, state.PreviewScale);
+            var infoRight = state.PreviewRed.X1 - gap;
+            var infoTop = state.PreviewRed.CenterY - infoH / 2;
+            var infoLeft = infoRight - infoW;
+            scene.FillRect(infoLeft, infoTop, infoW, infoH, OverlayBlack);
+            scene.Rect(infoLeft, infoTop, infoW, infoH, OverlayGreen, 2);
+            var textX = infoLeft + ScaledPx(8, state.PreviewScale);
+            var hzText = "hz " + state.AnalysisHz10 / 10 + "." + Math.Abs(state.AnalysisHz10 % 10);
+            var ttcText = "ttc " + state.TtcMs + "ms";
+            var endToEndText = state.EndToEndMs >= 0 ? "e2e " + state.EndToEndMs + "ms" : "e2e --";
+            // 分析频率低于 30 次 / 秒时用橙色提醒
+            var hzColor = state.AnalysisHz10 is > 0 and < 300 ? OverlayWarningOrange : OverlayTextGreen;
+            InfoLine(scene, textX, infoTop + ScaledPx(5, state.PreviewScale), hzText, hzColor);
+            InfoLine(scene, textX, infoTop + ScaledPx(23, state.PreviewScale), ttcText, OverlayTextGreen);
+            InfoLine(scene, textX, infoTop + ScaledPx(41, state.PreviewScale), endToEndText, OverlayTextGreen);
+        }
+        if (state.CursorVisible)
+        {
+            // 光标窗口 64 像素宽，左边缘在 cursorX - 32；里面的坐标照搬原版（不随画面缩放）
+            var wx = state.CursorX - CursorSize / 2;
+            int cy = state.CursorY, ty = state.CursorTargetY;
+            var arrowTop = cy - CursorArrowTopOffset;
+            var arrowBottom = cy + CursorArrowBottomOffset;
+            var edgeY = ty < cy ? arrowTop : arrowBottom;
+            var docked = Math.Abs(ty - edgeY) <= 2;
+            if (state.CursorInZone && !docked)
+            {
+                // 缺口快到红线：从箭头上沿或下沿引一条竖线到红线迎面那条边，末端一道短横
+                const int lx = 50;
+                scene.Line(wx + lx, edgeY, wx + lx, ty, OverlayBlack, 5);
+                scene.Line(wx + 40, ty, wx + 62, ty, OverlayBlack, 5);
+                scene.Line(wx + lx, edgeY, wx + lx, ty, OverlayGreen, 2);
+                scene.Line(wx + 40, ty, wx + 62, ty, OverlayGreen, 2);
+            }
+            // 指向右边竖条的空心箭头（Polyline），先画粗的深色描边再画绿色
+            (int x, int y)[] arrow = [(35, arrowTop), (18, arrowTop), (29, cy), (18, arrowBottom), (35, arrowBottom), (46, cy), (35, arrowTop)];
+            for (var i = 1; i < arrow.Length; i++)
+                scene.Line(wx + arrow[i - 1].x, arrow[i - 1].y, wx + arrow[i].x, arrow[i].y, OverlayBlack, 8);
+            for (var i = 1; i < arrow.Length; i++)
+                scene.Line(wx + arrow[i - 1].x, arrow[i - 1].y, wx + arrow[i].x, arrow[i].y, OverlayGreen, 5);
+        }
+        return scene;
+    }
+
+    /// <summary>信息框里的一行字，左上角在 (left, top)。按每字约 7.3 像素估算宽度，换成渲染需要的中心点。</summary>
+    private static void InfoLine(HackScene scene, int left, int top, string text, uint color) =>
+        scene.Text(left + text.Length * 7.3f / 2, top + 8, text, color, 13, outline: false);
+
+    /// <summary>交一帧新内容（原版两个窗口的定时器各自 InvalidateRect）；叠加层关着时不准备内容，正在显示的收起来。</summary>
+    private void PublishOverlay(in OverlayState state)
+    {
+        var overlay = host.Overlay;
+        if (!overlay.Enabled) { HideOverlay(); return; }
+        var scene = BuildOverlayScene(state);
+        if (scene.IsEmpty) { HideOverlay(); return; }
+        if (_overlayShown is not null && _overlayShown.SequenceEqual(scene.Shapes)) return;
+        overlay.Show(scene);
+        _overlayShown = scene.Shapes;
+    }
+
+    /// <summary>ClearOverlayState / HideTransientOverlays：收起光标和信息框。</summary>
+    private void HideOverlay()
+    {
+        if (_overlayShown is null) return;
+        _overlayShown = null;
+        host.Overlay.Clear();
+    }
 
     // ───────── 像素 ─────────
 
@@ -625,6 +729,15 @@ public sealed class SliderHack(IHackHost host) : IHackGame
         int analysisIntervalSampleCount = 0, analysisIntervalSampleIndex = 0;
         double analysisIntervalSampleSum = 0, actualAnalysisIntervalSeconds = AnalysisIntervalSeconds;
         var frame = new CaptureFrame();
+        var overlay = new OverlayState { TtcMs = -1, PreviewScale = 1.0, EndToEndMs = Round(calibratedLatencySeconds * 1000.0) };
+        var lastUiUpdate = Now - Ms(1000);
+        // UpdatePreview：信息框只在有竖条时显示，位置跟着红线
+        void UpdatePreview(FrameAnalysis analysis, double scale)
+        {
+            overlay.PreviewHasBars = analysis.Bars.Count > 0;
+            overlay.PreviewRed = analysis.Red;
+            overlay.PreviewScale = scale;
+        }
 
         void ForgetGeometry()
         {
@@ -658,6 +771,7 @@ public sealed class SliderHack(IHackHost host) : IHackGame
                 analysisIntervalSampleSum += frameIntervalSeconds;
                 analysisIntervalSampleIndex = (analysisIntervalSampleIndex + 1) % analysisIntervalSamples.Length;
                 actualAnalysisIntervalSeconds = analysisIntervalSampleSum / analysisIntervalSampleCount;
+                overlay.AnalysisHz10 = Round(10.0 / actualAnalysisIntervalSeconds);
             }
 
             var yellowCandidates = postPress.Active
@@ -742,6 +856,8 @@ public sealed class SliderHack(IHackHost host) : IHackGame
                     geometryScale = 1.0;
                 }
                 status("slider: searching minigame");
+                UpdatePreview(a, 1.0);
+                PublishOverlay(overlay);
                 Thread.Sleep(40);
                 continue;
             }
@@ -832,6 +948,19 @@ public sealed class SliderHack(IHackHost host) : IHackGame
                 tracks[active].Valid = true;
                 AddTrackSample(tracks[active], yellow.GapCenterY - a.Red.CenterY, yellow.TopBottomY, yellow.BottomTopY, sampleTime);
                 expectedIndex = active;
+                // 叠加层光标：放在当前竖条左边，高度跟着缺口中心，先指向红线中线
+                var minBarX = searchCellsScreen.Ok && searchCellsScreen.XRanges.Count == 8 ? searchCellsScreen.XRanges[0].first
+                    : knownBarXRunsScreen.Count == 8 ? knownBarXRunsScreen[0].first : a.Red.X1;
+                var cursorBaseX = yellow.Index >= 0 && yellow.Index < a.Bars.Count
+                    ? a.Bars[yellow.Index].X1 - ScaledPx(16, geometryScale) - CursorArrowRightOffset
+                    : minBarX - ScaledPx(16, geometryScale) - CursorArrowRightOffset;
+                if (searchCellsScreen.Ok && searchCellsScreen.XRanges.Count == 8)
+                    cursorBaseX = searchCellsScreen.XRanges[active].first - ScaledPx(16, geometryScale) - CursorArrowRightOffset;
+                overlay.CursorX = cursorBaseX;
+                overlay.CursorY = Round(yellow.GapCenterY);
+                overlay.CursorTargetY = a.Red.CenterY;
+                overlay.CursorInZone = false;
+                overlay.CursorVisible = true;
             }
 
             if (postPress.Active)
@@ -847,6 +976,7 @@ public sealed class SliderHack(IHackHost host) : IHackGame
                         if (calibratedLatencySamples.Count == 2) calibratedLatencySamples.RemoveAt(0);
                         calibratedLatencySamples.Add(measured);
                         calibratedLatencySeconds = calibratedLatencySamples.Average();
+                        overlay.EndToEndMs = Round(calibratedLatencySeconds * 1000.0);
                     }
                     postPress = new PostPressCalibration();
                     ResetTrack(tracks[completedBar]);
@@ -882,12 +1012,16 @@ public sealed class SliderHack(IHackHost host) : IHackGame
                     status("slider: completed");
                     return true;
                 }
+                overlay.CursorVisible = false;
+                overlay.CursorInZone = false;
                 if (++yellowMissFrames >= 3)
                 {
                     lastYellowIndex = -1;
                     trackedActive = -1;
                 }
                 status("slider: waiting yellow outline");
+                UpdatePreview(a, geometryScale);
+                PublishOverlay(overlay);
                 Thread.Sleep(30);
                 continue;
             }
@@ -910,6 +1044,16 @@ public sealed class SliderHack(IHackHost host) : IHackGame
             var cooledDown = now - lastEnter > Ms(170);
             var modelReady = tracks[active].History.Count >= 2;
             var triggerReady = modelReady && IsUsableTiming(triggerTimeSec);
+            // 叠加层：引线指向缺口迎面的那条红线边；预计下一帧进入（或越过）触发区时算「快到了」
+            var forecastEdgeError = edgeError + velocity * actualAnalysisIntervalSeconds;
+            overlay.CursorTargetY = velocity >= 0.0 ? a.Red.Y1 : a.Red.Y2;
+            overlay.CursorInZone = Math.Abs(forecastEdgeError) <= ScaledPx(EdgeTriggerZonePx * 2.0, geometryScale) || edgeError * forecastEdgeError <= 0.0;
+            if (now - lastUiUpdate >= Ms(50))
+            {
+                overlay.TtcMs = IsUsableTiming(triggerTimeSec) ? Round(triggerTimeSec * 1000.0) : -1;
+                UpdatePreview(a, geometryScale);
+                lastUiUpdate = now;
+            }
             if (triggerReady && cooledDown)
             {
                 var predictedAt = sampleTime + (long)((triggerTimeSec - calibratedLatencySeconds) * Stopwatch.Frequency);
@@ -925,6 +1069,7 @@ public sealed class SliderHack(IHackHost host) : IHackGame
                     finishConfirmStart = predictedAt;
                 }
             }
+            PublishOverlay(overlay); // 放在排队按键之后：画图不耽误按键
         }
         return false;
     }
@@ -963,7 +1108,12 @@ public sealed class SliderHack(IHackHost host) : IHackGame
             lastStatus = text;
             status(text);
         }
+        _overlayShown = null; // 上一次会话结束后宿主已经清过叠加层
         try { return WorkerLoop(stopRequested, SetStatus); }
-        finally { ResetInGameCache(); }
+        finally
+        {
+            HideOverlay(); // RunSession 结束时的 ClearOverlayState
+            ResetInGameCache();
+        }
     }
 }

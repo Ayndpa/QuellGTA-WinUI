@@ -1,0 +1,10 @@
+{
+  "id": "hotkey-passthrough",
+  "name": "热键穿透",
+  "description": "游戏在前台时让 OBS、音乐播放器等程序的全局热键照常生效：按下列表里的组合键时临时切出游戏重发一次再切回。原版「HotKeySavior for GTAV」。",
+  "version": "1.0.0",
+  "author": "MageAngela",
+  "glyph": "",
+  "assembly": "QuellGTA.Plugin.HotkeyPassthrough.dll",
+  "api": 1
+}

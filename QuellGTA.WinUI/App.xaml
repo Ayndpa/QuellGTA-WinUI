@@ -17,13 +17,24 @@
                 <Setter Property="Padding" Value="16,12" />
             </Style>
 
+            <!-- 分组标题：和 Windows 设置一样，组与组之间留出较大的间距 -->
             <Style x:Key="SectionHeaderStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyStrongTextBlockStyle}">
-                <Setter Property="Margin" Value="2,16,0,6" />
+                <Setter Property="Margin" Value="1,28,0,6" />
             </Style>
 
             <Style x:Key="PageTitleStyle" TargetType="TextBlock" BasedOn="{StaticResource TitleTextBlockStyle}">
                 <Setter Property="Margin" Value="0,0,0,4" />
             </Style>
+
+            <!-- 快捷键里的单个按键（与 PowerToys 的按键图标同样的样子） -->
+            <Style x:Key="KeyChipStyle" TargetType="Border">
+                <Setter Property="Background" Value="{ThemeResource AccentFillColorDefaultBrush}" />
+                <Setter Property="CornerRadius" Value="4" />
+                <Setter Property="Padding" Value="8,3,8,4" />
+                <Setter Property="MinWidth" Value="30" />
+            </Style>
+
+            <x:Double x:Key="SettingsCardSpacing">4</x:Double>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

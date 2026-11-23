@@ -1,0 +1,87 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.WinUI", "QuellGTA.WinUI\QuellGTA.WinUI.csproj", "{F05913F3-DE12-41A3-9BF1-BBCA1AEC70AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugins.Abstractions", "QuellGTA.Plugins.Abstractions\QuellGTA.Plugins.Abstractions.csproj", "{B0223EBA-2FFB-40A6-A72F-7DCC5E2D7ABF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.UdpTrigger", "QuellGTA.UdpTrigger\QuellGTA.UdpTrigger.csproj", "{676D8F4B-E7E4-414E-883E-44D61C71FAFF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{C7AEEB54-7506-4A9A-B7F0-E47E6914D531}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugin.EnsureStart", "QuellGTA.Plugins\EnsureStart\QuellGTA.Plugin.EnsureStart.csproj", "{33977F9B-584C-45C3-8503-369074F77C3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugin.FlightTimer", "QuellGTA.Plugins\FlightTimer\QuellGTA.Plugin.FlightTimer.csproj", "{510AE0E1-D4B4-4123-998F-5715DBDC9DD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugin.HotkeyPassthrough", "QuellGTA.Plugins\HotkeyPassthrough\QuellGTA.Plugin.HotkeyPassthrough.csproj", "{8046B216-B4FA-4FE1-8519-7F82085BDC11}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugin.KeyTester", "QuellGTA.Plugins\KeyTester\QuellGTA.Plugin.KeyTester.csproj", "{0251ED20-C093-463E-821B-D0797001379D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugin.PcSettingsEditor", "QuellGTA.Plugins\PcSettingsEditor\QuellGTA.Plugin.PcSettingsEditor.csproj", "{0B6CAD88-154B-43C8-A1EF-B4F6AB2430B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugin.UdpTrigger", "QuellGTA.Plugins\UdpTrigger\QuellGTA.Plugin.UdpTrigger.csproj", "{FF1E6408-36DF-4A34-852A-3C09B907A7AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuellGTA.Plugin.WeaponWheel", "QuellGTA.Plugins\WeaponWheel\QuellGTA.Plugin.WeaponWheel.csproj", "{5E7CBFC8-ACEC-46FA-B9DA-2406542F4501}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F05913F3-DE12-41A3-9BF1-BBCA1AEC70AA}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{F05913F3-DE12-41A3-9BF1-BBCA1AEC70AA}.Debug|Any CPU.Build.0 = Debug|x64
+		{F05913F3-DE12-41A3-9BF1-BBCA1AEC70AA}.Release|Any CPU.ActiveCfg = Release|x64
+		{F05913F3-DE12-41A3-9BF1-BBCA1AEC70AA}.Release|Any CPU.Build.0 = Release|x64
+		{B0223EBA-2FFB-40A6-A72F-7DCC5E2D7ABF}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{B0223EBA-2FFB-40A6-A72F-7DCC5E2D7ABF}.Debug|Any CPU.Build.0 = Debug|x64
+		{B0223EBA-2FFB-40A6-A72F-7DCC5E2D7ABF}.Release|Any CPU.ActiveCfg = Release|x64
+		{B0223EBA-2FFB-40A6-A72F-7DCC5E2D7ABF}.Release|Any CPU.Build.0 = Release|x64
+		{676D8F4B-E7E4-414E-883E-44D61C71FAFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{676D8F4B-E7E4-414E-883E-44D61C71FAFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{676D8F4B-E7E4-414E-883E-44D61C71FAFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{676D8F4B-E7E4-414E-883E-44D61C71FAFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33977F9B-584C-45C3-8503-369074F77C3E}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{33977F9B-584C-45C3-8503-369074F77C3E}.Debug|Any CPU.Build.0 = Debug|x64
+		{33977F9B-584C-45C3-8503-369074F77C3E}.Release|Any CPU.ActiveCfg = Release|x64
+		{33977F9B-584C-45C3-8503-369074F77C3E}.Release|Any CPU.Build.0 = Release|x64
+		{510AE0E1-D4B4-4123-998F-5715DBDC9DD5}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{510AE0E1-D4B4-4123-998F-5715DBDC9DD5}.Debug|Any CPU.Build.0 = Debug|x64
+		{510AE0E1-D4B4-4123-998F-5715DBDC9DD5}.Release|Any CPU.ActiveCfg = Release|x64
+		{510AE0E1-D4B4-4123-998F-5715DBDC9DD5}.Release|Any CPU.Build.0 = Release|x64
+		{8046B216-B4FA-4FE1-8519-7F82085BDC11}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{8046B216-B4FA-4FE1-8519-7F82085BDC11}.Debug|Any CPU.Build.0 = Debug|x64
+		{8046B216-B4FA-4FE1-8519-7F82085BDC11}.Release|Any CPU.ActiveCfg = Release|x64
+		{8046B216-B4FA-4FE1-8519-7F82085BDC11}.Release|Any CPU.Build.0 = Release|x64
+		{0251ED20-C093-463E-821B-D0797001379D}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{0251ED20-C093-463E-821B-D0797001379D}.Debug|Any CPU.Build.0 = Debug|x64
+		{0251ED20-C093-463E-821B-D0797001379D}.Release|Any CPU.ActiveCfg = Release|x64
+		{0251ED20-C093-463E-821B-D0797001379D}.Release|Any CPU.Build.0 = Release|x64
+		{0B6CAD88-154B-43C8-A1EF-B4F6AB2430B1}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{0B6CAD88-154B-43C8-A1EF-B4F6AB2430B1}.Debug|Any CPU.Build.0 = Debug|x64
+		{0B6CAD88-154B-43C8-A1EF-B4F6AB2430B1}.Release|Any CPU.ActiveCfg = Release|x64
+		{0B6CAD88-154B-43C8-A1EF-B4F6AB2430B1}.Release|Any CPU.Build.0 = Release|x64
+		{FF1E6408-36DF-4A34-852A-3C09B907A7AB}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{FF1E6408-36DF-4A34-852A-3C09B907A7AB}.Debug|Any CPU.Build.0 = Debug|x64
+		{FF1E6408-36DF-4A34-852A-3C09B907A7AB}.Release|Any CPU.ActiveCfg = Release|x64
+		{FF1E6408-36DF-4A34-852A-3C09B907A7AB}.Release|Any CPU.Build.0 = Release|x64
+		{5E7CBFC8-ACEC-46FA-B9DA-2406542F4501}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{5E7CBFC8-ACEC-46FA-B9DA-2406542F4501}.Debug|Any CPU.Build.0 = Debug|x64
+		{5E7CBFC8-ACEC-46FA-B9DA-2406542F4501}.Release|Any CPU.ActiveCfg = Release|x64
+		{5E7CBFC8-ACEC-46FA-B9DA-2406542F4501}.Release|Any CPU.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{33977F9B-584C-45C3-8503-369074F77C3E} = {C7AEEB54-7506-4A9A-B7F0-E47E6914D531}
+		{510AE0E1-D4B4-4123-998F-5715DBDC9DD5} = {C7AEEB54-7506-4A9A-B7F0-E47E6914D531}
+		{8046B216-B4FA-4FE1-8519-7F82085BDC11} = {C7AEEB54-7506-4A9A-B7F0-E47E6914D531}
+		{0251ED20-C093-463E-821B-D0797001379D} = {C7AEEB54-7506-4A9A-B7F0-E47E6914D531}
+		{0B6CAD88-154B-43C8-A1EF-B4F6AB2430B1} = {C7AEEB54-7506-4A9A-B7F0-E47E6914D531}
+		{FF1E6408-36DF-4A34-852A-3C09B907A7AB} = {C7AEEB54-7506-4A9A-B7F0-E47E6914D531}
+		{5E7CBFC8-ACEC-46FA-B9DA-2406542F4501} = {C7AEEB54-7506-4A9A-B7F0-E47E6914D531}
+	EndGlobalSection
+EndGlobal

@@ -35,7 +35,36 @@ public sealed class OverlayService : IDisposable
     {
         _settings = settings;
         _game = game;
+        // 旧版本只有一个「多屏偏移」，同时作用于准星和计时器
+        var legacy = settings.Get("扩展", "多屏偏移", "");
+        if (legacy.Length > 0)
+        {
+            settings.Set("扩展", "多屏偏移计时", legacy);
+            settings.Set("扩展", "多屏偏移准星", legacy);
+            settings.Set("扩展", "多屏偏移", "");
+        }
     }
+
+    // ───────── 多屏偏移 ─────────
+
+    /// <summary>
+    /// 多屏偏移：把浮窗整体挪动若干个主屏幕的宽 / 高，用来把准星或计时器放到旁边的显示器上。
+    /// 保存成「横|纵」，单位是屏幕个数（原版 多屏偏移准星 / 多屏偏移计时）。
+    /// </summary>
+    public (int x, int y) CrosshairScreenOffset { get => ReadOffset("多屏偏移准星"); set => WriteOffset("多屏偏移准星", value); }
+    public (int x, int y) TimerScreenOffset { get => ReadOffset("多屏偏移计时"); set => WriteOffset("多屏偏移计时", value); }
+
+    private (int x, int y) ReadOffset(string key)
+    {
+        var parts = S(key, "0|0").Split('|');
+        return parts.Length == 2 && int.TryParse(parts[0], out var x) && int.TryParse(parts[1], out var y)
+            ? (Math.Clamp(x, -8, 8), Math.Clamp(y, -8, 8)) : (0, 0);
+    }
+
+    private void WriteOffset(string key, (int x, int y) value) =>
+        Set(key, $"{Math.Clamp(value.x, -8, 8)}|{Math.Clamp(value.y, -8, 8)}");
+
+    private static (int x, int y) ScreenShift((int x, int y) offset) => (offset.x * GetSystemMetrics(0), offset.y * GetSystemMetrics(1));
 
     // ───────── 准星设置 ─────────
     public bool CrosshairEnabled { get => B("外置准星", false); set => Set("外置准星", value); }
@@ -71,6 +100,14 @@ public sealed class OverlayService : IDisposable
     /// <summary>改变显示字体。原版默认黑体，这里默认等宽的 Consolas，数字跳动时宽度不变。</summary>
     public string TimerFont { get => S("计时字体名", "Consolas"); set => Set("计时字体名", value); }
     /// <summary>自定义个性签名：显示在计时器下面的一行小字，留空不显示。</summary>
+    /// <summary>个性签名的颜色（原版「签名颜色」，默认浅绿）。</summary>
+    public string SignatureColor { get => S("签名颜色RGB", "ABEBC6"); set => Set("签名颜色RGB", value); }
+    /// <summary>RTSS 显示时状态行（BLOCK / NIC / SOLO / 帧数）的颜色（原版「OSD颜色」，默认浅蓝）。</summary>
+    public string OsdColor { get => S("OSD颜色RGB", "D6E9F8"); set => Set("OSD颜色RGB", value); }
+    /// <summary>横排显示：个性签名放在时间右边，而不是下面一行。</summary>
+    public bool TimerHorizontal { get => B("横排计时", false); set => Set("横排计时", value); }
+    /// <summary>计时器走动时每秒刷新几次（原版「计时帧率」，1–1000，默认 100，即每 10 毫秒一次）。</summary>
+    public int TimerFps { get => I("计时帧率", 100, 1, 1000); set => Set("计时帧率", value); }
     public string TimerSignature { get => S("计时签名", ""); set => Set("计时签名", value.Length > 40 ? value[..40] : value); }
     /// <summary>记忆当前时间：保存下来的计时器读数（毫秒）。</summary>
     public long TimerMemory
@@ -242,7 +279,7 @@ public sealed class OverlayService : IDisposable
 
         while (!_stop)
         {
-            Thread.Sleep(_timerState == TimerState.Running && TimerEnabled ? 33 : 100);
+            Thread.Sleep(_timerState == TimerState.Running && TimerEnabled ? Math.Max(1, 1000 / TimerFps) : 100);
             Native.NativeMethods.MSG msg;
             while (PeekMessageW(out msg, 0, 0, 0, 1)) { TranslateMessage(ref msg); DispatchMessageW(ref msg); }
 
@@ -302,8 +339,9 @@ public sealed class OverlayService : IDisposable
         var size = CrosshairSize * scale;
         var thickness = Math.Max(1f, CrosshairThickness * scale);
         var area = CrosshairFollowGame ? anchor.area : Screen;
-        var cx = (area.Left + area.Right) / 2 + CrosshairOffsetX;
-        var cy = (area.Top + area.Bottom) / 2 + CrosshairOffsetY;
+        var shift = ScreenShift(CrosshairScreenOffset);
+        var cx = (area.Left + area.Right) / 2 + CrosshairOffsetX + shift.x;
+        var cy = (area.Top + area.Bottom) / 2 + CrosshairOffsetY + shift.y;
         var newKey = $"{CrosshairShape}|{size}|{thickness}|{CrosshairColor}|{CrosshairOpacity}|{CrosshairOutline}|{CrosshairHideFromCapture}|{CrosshairText}";
 
         var extent = (int)Math.Ceiling(size + thickness + 3);
@@ -403,10 +441,12 @@ public sealed class OverlayService : IDisposable
         var scale = GetDpiForSystem() / 96f;
         var fontPx = TimerFontSize * 96f / 72f * scale;
         var signature = TimerSignature;
-        var newKey = $"{text}|{fontPx}|{TimerColor}|{TimerOpacity}|{TimerHideFromCapture}|{_timerState}|{TimerFont}|{signature}";
+        var horizontal = TimerHorizontal;
+        var newKey = $"{text}|{fontPx}|{TimerColor}|{TimerOpacity}|{TimerHideFromCapture}|{_timerState}|{TimerFont}|{signature}|{horizontal}|{SignatureColor}";
         var area = anchor.area;
-        var centerX = (area.Left + area.Right) / 2 + TimerOffsetX;
-        var top = area.Top + TimerOffsetY;
+        var shift = ScreenShift(TimerScreenOffset);
+        var centerX = (area.Left + area.Right) / 2 + TimerOffsetX + shift.x;
+        var top = area.Top + TimerOffsetY + shift.y;
 
         if (newKey == key)
         {
@@ -421,20 +461,26 @@ public sealed class OverlayService : IDisposable
         using var _ = family;
         using var path = new GraphicsPath();
         path.AddString(text, family, (int)FontStyle.Bold, fontPx, new PointF(0, 0), StringFormat.GenericTypographic);
+        using var sigPath = new GraphicsPath();
         if (signature.Length > 0)
         {
-            // 个性签名：计时器下面居中的一行小字
+            // 个性签名：竖排时是计时器下面居中的一行小字，横排时跟在时间右边、上下居中
             var timeBounds = path.GetBounds();
             using var line = new GraphicsPath();
-            line.AddString(signature, family, (int)FontStyle.Regular, fontPx * 0.5f, new PointF(0, 0), StringFormat.GenericTypographic);
+            line.AddString(signature, family, (int)FontStyle.Regular, fontPx * (horizontal ? 0.6f : 0.5f), new PointF(0, 0), StringFormat.GenericTypographic);
             var lineBounds = line.GetBounds();
-            using var shift = new Matrix();
-            shift.Translate(timeBounds.X + (timeBounds.Width - lineBounds.Width) / 2 - lineBounds.X,
-                timeBounds.Bottom + fontPx * 0.25f - lineBounds.Y);
-            line.Transform(shift);
-            path.AddPath(line, false);
+            using var move = new Matrix();
+            if (horizontal)
+                move.Translate(timeBounds.Right + fontPx * 0.5f - lineBounds.X,
+                    timeBounds.Y + (timeBounds.Height - lineBounds.Height) / 2 - lineBounds.Y);
+            else
+                move.Translate(timeBounds.X + (timeBounds.Width - lineBounds.Width) / 2 - lineBounds.X,
+                    timeBounds.Bottom + fontPx * 0.25f - lineBounds.Y);
+            line.Transform(move);
+            sigPath.AddPath(line, false);
         }
         var bounds = path.GetBounds();
+        if (sigPath.PointCount > 0) bounds = RectangleF.Union(bounds, sigPath.GetBounds());
         var pad = (int)Math.Ceiling(3 * scale) + 2;
         var width = (int)Math.Ceiling(bounds.Width) + pad * 2;
         var height = (int)Math.Ceiling(bounds.Height) + pad * 2;
@@ -452,6 +498,12 @@ public sealed class OverlayService : IDisposable
             using var fill = new SolidBrush(color);
             g.DrawPath(outline, path);
             g.FillPath(fill, path);
+            if (sigPath.PointCount > 0)
+            {
+                using var sigFill = new SolidBrush(ParseColor(SignatureColor, TimerOpacity));
+                g.DrawPath(outline, sigPath);
+                g.FillPath(sigFill, sigPath);
+            }
         }
         window.SetCaptureHidden(TimerHideFromCapture);
         window.Render(bitmap, centerX - width / 2, top);
@@ -466,79 +518,4 @@ public sealed class OverlayService : IDisposable
 
     [System.Runtime.InteropServices.DllImport("user32.dll")]
     private static extern nint DispatchMessageW(ref Native.NativeMethods.MSG msg);
-
-    /// <summary>一个鼠标穿透、不抢焦点的置顶分层窗口，内容由 32 位带透明度的位图直接提供。</summary>
-    private sealed class LayeredWindow : IDisposable
-    {
-        private readonly nint _hwnd;
-        private bool _visible;
-        private bool? _captureHidden;
-        private int _x = int.MinValue, _y = int.MinValue, _width, _height;
-
-        public LayeredWindow()
-        {
-            _hwnd = CreateWindowExW(
-                WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE,
-                "Static", null, WS_POPUP, 0, 0, 1, 1, 0, 0, 0, 0);
-        }
-
-        public void SetCaptureHidden(bool hidden)
-        {
-            if (_captureHidden == hidden) return;
-            _captureHidden = hidden;
-            SetWindowDisplayAffinity(_hwnd, hidden ? WDA_EXCLUDEFROMCAPTURE : WDA_NONE);
-        }
-
-        public void Render(Bitmap bitmap, int x, int y)
-        {
-            var screenDc = GetDC(0);
-            var memoryDc = CreateCompatibleDC(screenDc);
-            var hBitmap = bitmap.GetHbitmap(Color.FromArgb(0));
-            var old = SelectObject(memoryDc, hBitmap);
-            try
-            {
-                var destination = new POINT { X = x, Y = y };
-                var size = new SIZE { Cx = bitmap.Width, Cy = bitmap.Height };
-                var source = new POINT();
-                var blend = new BLENDFUNCTION { Op = 0, SourceConstantAlpha = 255, AlphaFormat = 1 };
-                UpdateLayeredWindow(_hwnd, screenDc, ref destination, ref size, memoryDc, ref source, 0, ref blend, ULW_ALPHA);
-                (_x, _y, _width, _height) = (x, y, bitmap.Width, bitmap.Height);
-            }
-            finally
-            {
-                SelectObject(memoryDc, old);
-                DeleteObject(hBitmap);
-                DeleteDC(memoryDc);
-                ReleaseDC(0, screenDc);
-            }
-            if (!_visible)
-            {
-                ShowWindow(_hwnd, SW_SHOWNOACTIVATE);
-                _visible = true;
-            }
-            // 其他置顶窗口可能盖上来，重新声明一次置顶
-            SetWindowPos(_hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-        }
-
-        public void MoveTo(int x, int y)
-        {
-            if (!_visible || (x == _x && y == _y)) return;
-            (_x, _y) = (x, y);
-            SetWindowPos(_hwnd, HWND_TOPMOST, x, y, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE);
-        }
-
-        public void MoveCentered(int centerX, int top) => MoveTo(centerX - _width / 2, top);
-
-        public void Hide()
-        {
-            if (!_visible) return;
-            ShowWindow(_hwnd, SW_HIDE);
-            _visible = false;
-        }
-
-        public void Dispose()
-        {
-            if (_hwnd != 0) DestroyWindow(_hwnd);
-        }
-    }
 }

@@ -14,13 +14,15 @@ public sealed partial class AboutPage : Page
     public AboutPage()
     {
         InitializeComponent();
+        Loaded += (_, _) => OnShown();
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         VersionText.Text = $"WinUI 3 移植版 · 基于原版 build 0216（V4.22.216）· 程序版本 {version?.ToString(3)} · GPL-3.0";
         AboutText.Text = ReadAsset("About.txt");
         DeclarationText.Text = ReadAsset("Declaration.txt");
     }
 
-    protected override void OnNavigatedTo(NavigationEventArgs e) => Refresh();
+    /// <summary>页面每次显示时刷新（页面由主窗口直接创建，不经过 Frame 导航）。</summary>
+    private void OnShown() => Refresh();
 
     private static string ReadAsset(string name)
     {

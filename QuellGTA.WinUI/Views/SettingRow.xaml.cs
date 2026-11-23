@@ -4,27 +4,35 @@ using Microsoft.UI.Xaml.Markup;
 
 namespace QuellGTA.Views;
 
-/// <summary>设置项卡片：左边标题 + 说明，右边放控件。</summary>
+/// <summary>
+/// 设置项：内部就是一张 SettingsCard。保留这个外壳是为了让各页面 XAML 里原有的写法继续可用。
+/// </summary>
 [ContentProperty(Name = nameof(Action))]
 public sealed partial class SettingRow : UserControl
 {
     public static readonly DependencyProperty TitleProperty =
         DependencyProperty.Register(nameof(Title), typeof(string), typeof(SettingRow),
-            new PropertyMetadata("", (d, e) => ((SettingRow)d).TitleText.Text = (string)e.NewValue));
+            new PropertyMetadata("", (d, e) => ((SettingRow)d).Card.Header = e.NewValue));
 
     public static readonly DependencyProperty DescriptionProperty =
         DependencyProperty.Register(nameof(Description), typeof(string), typeof(SettingRow),
             new PropertyMetadata("", (d, e) =>
             {
-                var row = (SettingRow)d;
                 var text = (string)e.NewValue;
-                row.DescriptionText.Text = text;
-                row.DescriptionText.Visibility = string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
+                ((SettingRow)d).Card.Description = string.IsNullOrEmpty(text) ? null! : text;
             }));
 
     public static readonly DependencyProperty ActionProperty =
         DependencyProperty.Register(nameof(Action), typeof(object), typeof(SettingRow),
-            new PropertyMetadata(null, (d, e) => ((SettingRow)d).ActionHost.Content = e.NewValue));
+            new PropertyMetadata(null, (d, e) => ((SettingRow)d).Card.Content = e.NewValue));
+
+    public static readonly DependencyProperty GlyphProperty =
+        DependencyProperty.Register(nameof(Glyph), typeof(string), typeof(SettingRow),
+            new PropertyMetadata("", (d, e) =>
+            {
+                var glyph = (string)e.NewValue;
+                ((SettingRow)d).Card.HeaderIcon = string.IsNullOrEmpty(glyph) ? null! : new FontIcon { Glyph = glyph };
+            }));
 
     public SettingRow() => InitializeComponent();
 
@@ -44,5 +52,12 @@ public sealed partial class SettingRow : UserControl
     {
         get => GetValue(ActionProperty);
         set => SetValue(ActionProperty, value);
+    }
+
+    /// <summary>左侧图标（Segoe Fluent Icons 字形）。</summary>
+    public string Glyph
+    {
+        get => (string)GetValue(GlyphProperty);
+        set => SetValue(GlyphProperty, value);
     }
 }
