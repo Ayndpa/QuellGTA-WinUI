@@ -73,6 +73,30 @@ public static class HackUtil
     /// <summary>C++ 的 std::lround：四舍五入，.5 远离零。</summary>
     public static int Round(double value) => (int)Math.Round(value, MidpointRounding.AwayFromZero);
 
+    [DllImport("winmm.dll")] private static extern uint timeBeginPeriod(uint period);
+    [DllImport("winmm.dll")] private static extern uint timeEndPeriod(uint period);
+
+    /// <summary>
+    /// 把本进程的系统计时精度临时调到 1 毫秒，Dispose 时恢复。默认精度是 15.6 毫秒，
+    /// Sleep 和等待都可能晚到一整个时钟周期，对要卡时机按键的小游戏（弗利萨、滑块）影响很大。原版没有这一步。
+    /// </summary>
+    public static IDisposable HighResolutionTimer()
+    {
+        var ok = timeBeginPeriod(1) == 0;
+        return new Restore(ok);
+    }
+
+    private sealed class Restore(bool active) : IDisposable
+    {
+        private bool _active = active;
+        public void Dispose()
+        {
+            if (!_active) return;
+            _active = false;
+            timeEndPeriod(1);
+        }
+    }
+
     /// <summary>等到这一帧开始后满 16 毫秒（各模块的 WaitForFrame）。</summary>
     public static void WaitForFrame(Func<bool> stopRequested, long frameStartedTicks, double frameMs = 16)
     {

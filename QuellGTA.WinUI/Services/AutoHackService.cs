@@ -12,6 +12,7 @@ public sealed class AutoHackService : IDisposable
     private readonly Settings _settings;
     private readonly LogService _log;
     private readonly HackHost _host;
+    private readonly GameService _game;
     private readonly IHackGame[] _games;
     private readonly MatchHack _match;
     private readonly object _gate = new();
@@ -26,11 +27,12 @@ public sealed class AutoHackService : IDisposable
         _settings = settings;
         _log = log;
         _host = new HackHost(game);
+        _game = game;
         // 顺序与原版 DetectGame 一致（尚未移植的模块暂缺）
         var match = new MatchHack(_host);
         match.Solved += equation => _log.Write("自动骇入：" + equation, 1);
         _match = match;
-        _games = [new FindNumberHack(_host), match];
+        _games = [new SliderHack(_host), new FlashingHack(_host), new FleecaHack(_host), new FindNumberHack(_host), match];
     }
 
     public IEnumerable<string> SupportedGames => _games.Select(g => g.Name);
@@ -97,6 +99,7 @@ public sealed class AutoHackService : IDisposable
         var completed = false;
         var windowFound = false;
         IHackGame? game = null;
+        using var timer = HackUtil.HighResolutionTimer();
         try
         {
             SetStatus("searching for game window");
@@ -113,6 +116,13 @@ public sealed class AutoHackService : IDisposable
                     windowFound = true;
                     SetStatus("searching for minigame");
                     _log.Write("自动骇入：已找到游戏窗口，正在等待骇入画面…（再按一次热键取消）", 1);
+                    // 有几种小游戏照原版不检查前台窗口就直接按键；从本程序的按钮启动时，先把游戏切到前台，
+                    // 否则回车会打进本程序（还可能正好又「按」了一次开始 / 停止按钮）
+                    if (!_game.IsForeground())
+                    {
+                        _game.BringToFront();
+                        Thread.Sleep(300);
+                    }
                 }
                 foreach (var candidate in _games) candidate.ResetInGameCache();
                 game = _games.FirstOrDefault(g => g.DetectInGame());
